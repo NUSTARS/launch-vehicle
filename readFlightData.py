@@ -7,7 +7,7 @@ it as a CSV file using the MDACS software from MissileWorks
 NOTE: Apogee is not necesarily the maximum value in the array of altitudes.
 There are some weird pressure affects after drogue deploy. Take a loot at the plot,
 you can see when it levels out and afterwards there appears to be some further fluctuation/increase
-that probably is noise, maybe from some weird pressure effects from drogue deployment.
+that probably is noise.
 
 '''
 
