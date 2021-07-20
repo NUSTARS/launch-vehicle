@@ -10,7 +10,7 @@ today = today.strftime("%b-%d-%Y")
 
 
 # Path to template
-blank_form_path = r"/c/Users/nmark/Documents/NUSTARS/order_template.xlsx"
+blank_form_path = "PATH_TO_BLANK_ORDER_FORM"
 
 # Get command line input
 x = sys.argv
