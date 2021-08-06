@@ -44,7 +44,7 @@ def terminalV(mass,chuteSize,Cd):
 
     return v_term
 
-def main():
+def run():
     print(
         "===================================\n",
         "NUSTARS KINETIC ENERGY CALCULATOR\n"
@@ -64,6 +64,5 @@ def main():
         names.append(input('Enter name of section of rocket'))
         mass = float(input('Enter mass of section of rocket in kg'))
 
-if __name__ == "__main__":
-    main()
-
+    elif op == 2:
+        pass
