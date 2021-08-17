@@ -44,7 +44,7 @@ def terminalV(mass,chuteSize,Cd):
 
     return v_term
 
-def run():
+def main():
     print(
         "===================================\n",
         "NUSTARS KINETIC ENERGY CALCULATOR\n"

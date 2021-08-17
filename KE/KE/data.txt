@@ -1,0 +1,2 @@
+# Name of Rocket Section, Mass (kg) 
+Nose cone, 1 
