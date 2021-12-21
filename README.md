@@ -1,14 +1,6 @@
 # NUSTARS
 This repository contains useful code for various NUSTARS stuff, mostly launch vehicle related.
 
-## `mkorder.py`
-Creates a new blank order form in the current directory. Make sure to enter the path to the blank order form 
-in the script before you use it for the first time.  
-**Example:**  
-Running the following line in a shell (providing mkorder.py is on path) will create a new blank order named
-"MM_DD_YY_newOrder.xlsx" in the current directory.  
-`mkorder.py newOrder
-
 ## `readFlightData.py`
 Reads in flight data from the chosen CSV file containing flight data from MissileWorks RRC3 altimeters.
 
