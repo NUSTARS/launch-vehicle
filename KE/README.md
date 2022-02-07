@@ -9,5 +9,3 @@ drag, providing you know the drag coefficient. We typically ignore the
 drag of the falling rocket and just use the drag of the parachute,
 which gives an inherant safety factor.
 
-The `KEcalc` function will calculate the kinetic energy at
-landing in units of ft-lb since that's what NASA uses.
