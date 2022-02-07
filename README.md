@@ -8,6 +8,8 @@ git clone https://github.com/NUSTARS/launch-vehicle
 ```
 Alternatively you could download the zip folder for the code
 
+Make sure to install required dependencies for Python scripts, which are probably just numpy and matplotlib
+
 ## `plot_flight_data.py`
 Reads in and plots flight data from the chosen CSV file containing
 flight data from MissileWorks RRC3 altimeters.
