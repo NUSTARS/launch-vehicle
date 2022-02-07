@@ -1,4 +1,5 @@
 # NUSTARS Launch Vehicle
+TODO: Somebody rewrite everything in Python or something because MATLAB sucks
 
 ## `plot_flight_data.py`
 Reads in and plots flight data from the chosen CSV file containing
