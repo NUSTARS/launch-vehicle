@@ -4,7 +4,7 @@ TODO: Somebody rewrite everything in Python or something because MATLAB sucks
 ## Installation
 Clone the repo with 
 ```
-git clone https://github.com/NUSTARS/launch-vehicle"
+git clone https://github.com/NUSTARS/launch-vehicle
 ```
 Alternatively you could download the zip folder for the code
 
