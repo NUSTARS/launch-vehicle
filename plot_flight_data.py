@@ -16,68 +16,67 @@ import tkinter as tk
 from tkinter import filedialog
 
 
-def run():
-    
-    # Import flight data
-    root = tk.Tk()
-    root.withdraw()
-    dataPath = filedialog.askopenfilename() # Ask user to select data
-    print('\n\nPath to flight data: %s\n' % dataPath)
-    root.destroy()
 
-    # Read in the data
-    t =[]       # Time (s)
-    a = []      # Altitude (ft.)
-    p = []      # Pressure
-    v = []      # Velocity (ft/s)
-    temp = []   # Temperature (F)
-    volts = []  # Voltage (V)
-    colHeaders = []
-    count = 0
-    with open(dataPath) as d:
-        for row in d:
-            row = row.split(",")    
-            if count > 0:               # Append the data accordingly
-                t.append(row[0])
-                a.append(row[1])
-                p.append(row[2])
-                v.append(row[3])
-                temp.append(row[4])
+# Import flight data
+root = tk.Tk()
+root.withdraw()
+dataPath = filedialog.askopenfilename() # Ask user to select data
+print('\n\nPath to flight data: %s\n' % dataPath)
+root.destroy()
 
-            elif count == 0:            # Get the table headers
-                c = 0
-                for i in row:
-                    if c == 0:
-                        i = i[3:]       # Remove weird characters before 'time'
-                    elif c == 6:
-                        i = i[0:8]      # Remove the '\n' after 'voltage'
-                    colHeaders.append(i)
-                    c = c+1
-            count += 1
+# Read in the data
+t =[]       # Time (s)
+a = []      # Altitude (ft.)
+p = []      # Pressure
+v = []      # Velocity (ft/s)
+temp = []   # Temperature (F)
+volts = []  # Voltage (V)
+colHeaders = []
+count = 0
+with open(dataPath) as d:
+    for row in d:
+        row = row.split(",")    
+        if count > 0:               # Append the data accordingly
+            t.append(row[0])
+            a.append(row[1])
+            p.append(row[2])
+            v.append(row[3])
+            temp.append(row[4])
 
-    # print('Table column headers: %s\n' % colHeaders)
+        elif count == 0:            # Get the table headers
+            c = 0
+            for i in row:
+                if c == 0:
+                    i = i[3:]       # Remove weird characters before 'time'
+                elif c == 6:
+                    i = i[0:8]      # Remove the '\n' after 'voltage'
+                colHeaders.append(i)
+                c = c+1
+        count += 1
 
-    # Convert data to floats
-    t = [float(i) for i in t]  
-    a = [float(i) for i in a]
-    p = [float(i) for i in p]
-    v = [float(i) for i in v]
-    # temp = [float(i) for i in temp]
-    # volts = [float(i) for i in volts]
+# print('Table column headers: %s\n' % colHeaders)
 
-    # Altitude plot
-    fig, ax = plt.subplots(figsize=(8,5))
-    ax.plot(t,a,'-b')
-    ax.set(xlabel='time (s)', ylabel='Altitude (ft)',title='Altitude vs Time')
-    ax.grid()
-    plt.show()
+# Convert data to floats
+t = [float(i) for i in t]  
+a = [float(i) for i in a]
+p = [float(i) for i in p]
+v = [float(i) for i in v]
+# temp = [float(i) for i in temp]
+# volts = [float(i) for i in volts]
 
-    # Velocity Plot
-    fig, ax = plt.subplots(figsize=(8,5))
-    ax.plot(t,v,'-r')
-    ax.set(xlabel='time (s)', ylabel='Velocity (ft/s)',title='Velocity vs Time')
-    ax.grid()
-    plt.show()
+# Altitude plot
+fig, ax = plt.subplots(figsize=(8,5))
+ax.plot(t,a,'-b')
+ax.set(xlabel='time (s)', ylabel='Altitude (ft)',title='Altitude vs Time')
+ax.grid()
+plt.show()
+
+# Velocity Plot
+fig, ax = plt.subplots(figsize=(8,5))
+ax.plot(t,v,'-r')
+ax.set(xlabel='time (s)', ylabel='Velocity (ft/s)',title='Velocity vs Time')
+ax.grid()
+plt.show()
 
 
 
