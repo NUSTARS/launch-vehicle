@@ -1,5 +1,4 @@
-# NUSTARS
-This repository contains useful code for various NUSTARS stuff, mostly launch vehicle related.
+# NUSTARS Launch Vehicle
 
 ## `readFlightData.py`
 Reads in flight data from the chosen CSV file containing flight data from MissileWorks RRC3 altimeters.
