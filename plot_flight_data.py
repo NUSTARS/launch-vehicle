@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 
 '''
 Program to read CSV Flight Data and generate plots.
 
@@ -14,8 +15,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
-import scipy.signal as sig
 
+plt.style.use("ggplot") # Set matplotlib style
 
 
 def mav(x,y,num_avg): 
@@ -37,10 +38,6 @@ def mav(x,y,num_avg):
     return xnew,ynew
 
 
-
-plt.style.use("ggplot")
-
-
 # Import flight data
 root = tk.Tk()
 root.withdraw()
@@ -50,7 +47,7 @@ root.destroy()
 
 # Read in the data
 t =[]       # Time (s)
-alt = []      # Altitude (ft.)
+alt = []    # Altitude (ft.)
 p = []      # Pressure
 v = []      # Velocity (ft/s)
 temp = []   # Temperature (F)
@@ -88,8 +85,10 @@ v = [float(i) for i in v]
 # temp = [float(i) for i in temp]
 # volts = [float(i) for i in volts]
 
+# Apply moving average filters to the data
 talt, alt = mav(t,alt,20)
 tv, v = mav(t,v,20)
+tp, p = mav(t,p,20)
 
 # Altitude plot
 fig, ax = plt.subplots(figsize=(8,5))
@@ -97,17 +96,9 @@ ax.plot(talt,alt,'-b')
 ax.set(xlabel='time (s)', ylabel='Altitude (ft)',title='Altitude vs Time')
 plt.show()
 
-# Velocity Plot
+# Velocity plot
 fig, ax = plt.subplots(figsize=(8,5))
 ax.plot(tv,v,'-r')
 ax.set(xlabel='time (s)', ylabel='Velocity (ft/s)',title='Velocity vs Time')
 plt.show()
-
-
-
-
-
-
-
-
 
