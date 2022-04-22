@@ -2,7 +2,7 @@
 Program to read CSV Flight Data and generate plots.
 
 First you must download the altimeter flight data and save export 
-it as a CSV file using the MDACS software from MissileWorks
+it as alt CSV file using the MDACS software from MissileWorks
 
 NOTE: Apogee is not necesarily the maximum value in the array of altitudes.
 There are some weird pressure affects after drogue deploy. Take a loot at the plot,
@@ -14,7 +14,31 @@ import numpy as np
 from matplotlib import pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
+import scipy.signal as sig
 
+
+
+def mav(x,y,num_avg): 
+    '''
+    mav(x,y,num_avg) computes the moving average of the specified number of points
+    of the inputted y and returns it as the new x values and new y values as two lists.
+    '''
+    ynew = []
+    i = 0
+    while i < (len(y) - num_avg + 1):
+        reg = y[i:i+num_avg]
+        mav = sum(reg)/num_avg
+        ynew.append(mav)
+        i += 1
+
+    lost = (x[-1] - x[-num_avg])
+    xnew = np.linspace(0,x[-1] - lost,len(ynew))
+
+    return xnew,ynew
+
+
+
+plt.style.use("ggplot")
 
 
 # Import flight data
@@ -26,7 +50,7 @@ root.destroy()
 
 # Read in the data
 t =[]       # Time (s)
-a = []      # Altitude (ft.)
+alt = []      # Altitude (ft.)
 p = []      # Pressure
 v = []      # Velocity (ft/s)
 temp = []   # Temperature (F)
@@ -38,7 +62,7 @@ with open(dataPath) as d:
         row = row.split(",")    
         if count > 0:               # Append the data accordingly
             t.append(row[0])
-            a.append(row[1])
+            alt.append(row[1])
             p.append(row[2])
             v.append(row[3])
             temp.append(row[4])
@@ -58,25 +82,27 @@ with open(dataPath) as d:
 
 # Convert data to floats
 t = [float(i) for i in t]  
-a = [float(i) for i in a]
+alt = [float(i) for i in alt]
 p = [float(i) for i in p]
 v = [float(i) for i in v]
 # temp = [float(i) for i in temp]
 # volts = [float(i) for i in volts]
 
+talt, alt = mav(t,alt,20)
+tv, v = mav(t,v,20)
+
 # Altitude plot
 fig, ax = plt.subplots(figsize=(8,5))
-ax.plot(t,a,'-b')
+ax.plot(talt,alt,'-b')
 ax.set(xlabel='time (s)', ylabel='Altitude (ft)',title='Altitude vs Time')
-ax.grid()
 plt.show()
 
 # Velocity Plot
 fig, ax = plt.subplots(figsize=(8,5))
-ax.plot(t,v,'-r')
+ax.plot(tv,v,'-r')
 ax.set(xlabel='time (s)', ylabel='Velocity (ft/s)',title='Velocity vs Time')
-ax.grid()
 plt.show()
+
 
 
 
