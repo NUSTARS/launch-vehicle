@@ -1,19 +1,4 @@
 # NUSTARS Launch Vehicle
-TODO: Somebody rewrite everything in Python or something because MATLAB sucks
-
-## Installation
-Clone the repo with 
-```
-git clone https://github.com/NUSTARS/launch-vehicle
-```
-Alternatively you could download the zip folder for the code
-
-Make sure to install required dependencies for Python scripts, which are probably just numpy and matplotlib
-
-## `plot_flight_data.py`
-Reads in and plots flight data from the chosen CSV file containing
-flight data from MissileWorks RRC3 altimeters.
-### Useage
-Run `python plot_flight_data.py` to run this script and you will be 
-prompted to select the CSV data file you would like to plot. That's it.
-
+Useful code for rocket related things such as
+fin flutter analysis, kinetic energy at landing calcs,
+and plotting flight data from RRC3 altimeters
