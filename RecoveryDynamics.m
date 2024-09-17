@@ -1,8 +1,11 @@
 clc; clear; close all;
 
-% ALL UNITS IMPERIAL
+%% RecoveryDynamics Solver
 
-% inputs
+% Author: Andy Wehmeyer, 9/17/24
+% All units in imperial. Note that mass is computed in [slugs]
+
+% USER INPUTS
 weight = 35;
 apogee = 5000;
 drogue_d = 18;
@@ -10,17 +13,15 @@ cd = 2.2;
 main_alt = 500;
 main_d = 120;
 
-% constants
+% CONSTANTS
 g = 32.17;
 
-% computed values
+% COMPUTED VALUES 
 drogue_A = pi() * drogue_d^2 / 4 / 144;
 main_A = pi() * main_d^2 / 4 / 144;
 mass = weight / g;
 
-% polyfunc = polyfit([0, t_fill], [pi * drogue_d^2/4 * 1/144, pi * main_d^2/4 * 1/144], 2);
-% area_function = @(x) polyval(polyfunc, x);
-
+% STRUCTURE FOR ODE SOLVER
 params = struct("apogee", apogee, ...
                 "drogue_A", drogue_A, ...
                 "main_alt", main_alt, ...
@@ -29,21 +30,21 @@ params = struct("apogee", apogee, ...
                 "mass", mass);
 RecoveryDynamicsFunction(params);
 
+
 function RecoveryDynamicsFunction(params)
-    tspan = [0 1e3]; % Time span for ode45
+    tspan = [0 1e3];
 
     % Start at apogee
     x_0 = 0;
     y_0 = params.apogee;
     dx_0 = 0;
     dy_0 = 0;
-
     initial_conditions = [x_0, y_0, dx_0, dy_0];
 
     % Solve the ODEs using ode45
-   
     options = odeset('Events', @eventFunction, 'RelTol', 1e-6);
 
+    % Captured rhs for params
     newrhs = @(t,input)odeFunction(t,input,params);
 
     [time, states] = ode45(newrhs, tspan, initial_conditions, options);
@@ -52,13 +53,13 @@ function RecoveryDynamicsFunction(params)
     plotResults(time, states, params);
 
     clc;
-
     fprintf("Terminal Velocity: %.2f ft/s\n", min(states(:,4)))
     fprintf("Total Descent Time: %.2f s\n", time(end))
     fprintf("Main Impact Velocity: %.2f ft/s\n", states(end,4))
 end
 
 function rho = density(h)
+    % Variable density function
     if h < 36152
         T = 59 - 0.00356 * h; % F
         p = 2116 * ((T+459.7)/518.6)^5.256; % lbf/ft^2
@@ -72,6 +73,7 @@ function rho = density(h)
     end
 end
 
+% Dydt function for dynamics using parachutes
 function dydt = odeFunction(t, input, params)
 
     % Extract states
@@ -84,11 +86,16 @@ function dydt = odeFunction(t, input, params)
     fprintf("height %.2f and density %.8f \n", y, rho)
 
     stage = "";
-    if y > params.main_alt % UNDER DROGUE FROM APOGEE – MAIN DEPLOYMENT ALT
+    if y > params.main_alt 
+        % Drogue parachute only
         stage = "drogue";
         f_drag = 0.5 * rho * vy^2 * params.cd * params.drogue_A;
-    elseif y > 0 % UNDER DROGUE
+
+    elseif y > 0
+        % Main parachute only
         stage = "main";
+        
+        % Initial attempt to capture dynamic opening of parachute area
         height_to_open = 100;
         if params.main_alt - y < height_to_open
             computed_area = params.drogue_A + (params.main_A - params.drogue_A) * (params.main_alt - y) / height_to_open;
@@ -96,22 +103,22 @@ function dydt = odeFunction(t, input, params)
             computed_area = params.main_A;
         end
         f_drag = 0.5 * rho * vy^2 * params.cd * computed_area;
+
     elseif y <= 0
         stage = "touchdown";
         dydt = [0; 0; 0; 0];
         return;
     else
-        fprintf('fucked up at %d during %s\n', y, stage)
+        fprintf('Broken at %d during %s\n', y, stage)
         return;
     end
-
+    
     f_y = f_drag - params.mass*32.17;
     f_x = 0;
 
     ax = (1/params.mass) * f_x;
     ay = (1/params.mass) * f_y;
 
-    % ODEs
     dydt = [vx; vy; ax; ay];
 end
 
