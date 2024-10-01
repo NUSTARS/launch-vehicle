@@ -14,7 +14,8 @@ import matplotlib.ticker as ticker
 input_is_metric = True
 output_is_metric = False
 
-# plt.style.use('seaborn-v0_8-dark-palette')
+# change this to your directory
+user_directory = "/Users/andrewwehmeyer/Library/Mobile Documents/com~apple~CloudDocs/NUSTARS/Coding/Repos/launch-vehicle/plotting/"
 
 def clean_data(df, alpha):
     assert alpha > 0 and alpha <= 1, 'Alpha must be between 0 and 1'
@@ -1146,7 +1147,7 @@ def generic_plot(xaxis_key, yaxis_key, df, title, xlabel, ylabel, color='b'):
 
 def main(file_name, properties):
     # DATA PREPPING
-    path_start = "/Users/andrewwehmeyer/Library/Mobile Documents/com~apple~CloudDocs/NUSTARS/Coding/Visualization/data/"
+    path_start = user_directory + "data-2024/"
     df_primary = pd.read_csv(path_start + file_name + "_primary.csv")
     df_backup = pd.read_csv(path_start + file_name + "_backup.csv")
 
@@ -1206,14 +1207,12 @@ def main(file_name, properties):
     save_figures = False
     if save_figures:
         for i in plt.get_fignums():
-            plt.figure(i).savefig(f'/Users/andrewwehmeyer/Library/Mobile Documents/com~apple~CloudDocs/NUSTARS/Coding/Visualization/Figures/figure_{i}.png', dpi=300)
+            plt.figure(i).savefig(f'/figures/figure_{i}.png', dpi=300)
 
     plt.show()
 
-file_name = "supersonic"
+file_name = "FT1"
 properties = {"weight": 36.77, "area": 0.22, "length_scale":6.17, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # FT7
-#properties = {"weight": 4.85, "area": 0.03587714, "length_scale":2.242,"main_parachute_height":500}
-
 main(file_name, properties)
 
 # notes for future
