@@ -4,18 +4,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
 from scipy.signal import savgol_filter
-import math
 from PIL import Image
 import matplotlib.ticker as ticker
+import os
+from pathlib import Path
 # import seaborn as sns
 # import scipy as spi
 # from mpl_toolkits.mplot3d import Axes3D
 
 input_is_metric = True
 output_is_metric = False
-
-# change this to your directory
-user_directory = "/Users/andrewwehmeyer/Library/Mobile Documents/com~apple~CloudDocs/NUSTARS/Coding/Repos/launch-vehicle/plotting/"
 
 def clean_data(df, alpha):
     assert alpha > 0 and alpha <= 1, 'Alpha must be between 0 and 1'
@@ -1147,9 +1145,10 @@ def generic_plot(xaxis_key, yaxis_key, df, title, xlabel, ylabel, color='b'):
 
 def main(file_name, properties):
     # DATA PREPPING
-    path_start = user_directory + "data-2024/"
-    df_primary = pd.read_csv(path_start + file_name + "_primary.csv")
-    df_backup = pd.read_csv(path_start + file_name + "_backup.csv")
+    project_root = Path(__file__).parent  # Gets the current directory where the script is located
+    data_dir = project_root / "data-2024"
+    df_primary = pd.read_csv(data_dir / f"{file_name}_primary.csv")
+    df_backup = pd.read_csv(data_dir / f"{file_name}_backup.csv")
 
     # CLEANING DATA AND CONVERTING TO IMPERIAL
     alpha = 0.6
