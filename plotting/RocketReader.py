@@ -1211,9 +1211,11 @@ def main(file_name, properties):
 
     plt.show()
 
-file_name = "FT1"
+file_name = "FT3"
 properties = {"weight": 36.77, "area": 0.22, "length_scale":6.17, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # FT7
 main(file_name, properties)
+
+# GO TO THE TOP AND UPDATE THE DIRECTORY FOR YOUR SYSTEM
 
 # notes for future
 # add ways to detect failed import and improve error checking
