@@ -43,6 +43,8 @@ def plot_labeled_circles(lat_lng_radius_label_list, map_center, zoom_start=10, o
     # Open the map in the default web browser
     webbrowser.open('file://' + os.path.realpath(file_path))
 
+    my_map.save("bama_2025.html")
+
 # List of (latitude, longitude, radius, label) tuples
 lat_lng_radius_label_list = [
     (34.90066, -86.61550, 4750, 'Grain Silo -- NASA Antenna'),
