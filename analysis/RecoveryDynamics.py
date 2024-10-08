@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 weight = 35  # lbs
 apogee = 5000  # ft
 drogue_d = 18  # in
-cd = 2.2
+main_cd = 2.2
+drogue_cd = 1.6
 main_alt = 500  # ft
 main_d = 120  # in
 
@@ -26,7 +27,8 @@ params = {
     "drogue_A": drogue_A,
     "main_alt": main_alt,
     "main_A": main_A,
-    "cd": cd,
+    "drogue_cd": drogue_cd,
+    "main_cd": main_cd,
     "mass": mass
 }
 
@@ -36,15 +38,15 @@ def recovery_dynamics(t, state, params):
 
     if y > params["main_alt"]:
         # Drogue parachute only
-        f_drag = 0.5 * rho * vy**2 * params["cd"] * params["drogue_A"]
+        f_drag = 0.5 * rho * vy**2 * params["drogue_cd"] * params["drogue_A"]
     elif y > 0:
         # Main parachute, with dynamic opening
-        height_to_open = 100
+        height_to_open = 300
         if params["main_alt"] - y < height_to_open:
             computed_area = params["drogue_A"] + (params["main_A"] - params["drogue_A"]) * (params["main_alt"] - y) / height_to_open
         else:
             computed_area = params["main_A"]
-        f_drag = 0.5 * rho * vy**2 * params["cd"] * computed_area
+        f_drag = 0.5 * rho * vy**2 * params["main_cd"] * computed_area
     else:
         return [0, 0, 0, 0]  # Stop descent at ground level
 
