@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 # PYTHON 3.7
 
 # USER INPUTS
-weight = 35  # lbs
+weight = 35.36  # lbs
 apogee = 5000  # ft
 drogue_d = 18  # in
 main_cd = 2.2
 drogue_cd = 1.6
-main_alt = 500  # ft
-main_d = 120  # in
+main_alt = 550  # ft
+main_d = 96  # in
 
 # CONSTANTS
 g = 32.17  # ft/s^2
@@ -104,10 +104,13 @@ def plot_results(time, states, params):
     descent_time = sol.t[-1]
     impact_velocity = sol.y[3, -1]
 
+    impact_force = 0.5 * density(0) * terminal_velocity**2 * params["main_cd"] * params["main_A"]
+
     result_text = (
         f"Terminal Velocity: {terminal_velocity:.2f} ft/s\n"
         f"Total Descent Time: {descent_time:.2f} s\n"
-        f"Main Impact Velocity: {impact_velocity:.2f} ft/s"
+        f"Main Impact Velocity: {impact_velocity:.2f} ft/s\n"
+        f"Main Impact Force: {impact_force:.2f} lbf"
     )
     axs[0].text(0.95, 0.9, result_text, fontsize=12, va="top", ha="right",
             transform=axs[0].transAxes, bbox=dict(boxstyle="round,pad=0.3", edgecolor="none", facecolor="white"))
