@@ -11,7 +11,7 @@ drogue_d = 18  # in
 main_cd = 2.2
 drogue_cd = 1.6
 main_alt = 550  # ft
-main_d = 96  # in
+main_d = 120  # in
 
 # CONSTANTS
 g = 32.17  # ft/s^2
