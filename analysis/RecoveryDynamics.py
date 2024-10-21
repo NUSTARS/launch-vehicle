@@ -100,17 +100,25 @@ def plot_results(time, states, params):
     axs[1].set_title("Velocity vs. Time")
     axs[1].grid(True)  # Add grid lines
 
-    terminal_velocity = min(sol.y[3])
+    # Find velocity just before the main parachute opens (at `main_alt`)
+    idx_main_open = np.argmax(states[:, 1] <= params["main_alt"])  # First index where altitude is below `main_alt`
+    if idx_main_open > 0:
+        terminal_velocity_drogue = states[idx_main_open - 1, 3]  # Velocity just before main opens
+    else:
+        terminal_velocity_drogue = np.nan  # If we don't find such a point
+
     descent_time = sol.t[-1]
     impact_velocity = sol.y[3, -1]
 
-    impact_force = 0.5 * density(0) * terminal_velocity**2 * params["main_cd"] * params["main_A"]
+    opening_force = 0.5 * density(0) * terminal_velocity_drogue**2 * params["main_cd"] * params["main_A"]
+    opening_acceleration =(opening_force-params["mass"]*g)/params["mass"]
 
     result_text = (
-        f"Terminal Velocity: {terminal_velocity:.2f} ft/s\n"
+        f"Terminal Velocity: {terminal_velocity_drogue:.2f} ft/s\n"
         f"Total Descent Time: {descent_time:.2f} s\n"
         f"Main Impact Velocity: {impact_velocity:.2f} ft/s\n"
-        f"Main Impact Force: {impact_force:.2f} lbf"
+        f"Main Opening Load: {opening_force:.2f} lbf\n"
+        f"Main Opening Acceleration: {opening_acceleration:.2f} ft/s^2"
     )
     axs[0].text(0.95, 0.9, result_text, fontsize=12, va="top", ha="right",
             transform=axs[0].transAxes, bbox=dict(boxstyle="round,pad=0.3", edgecolor="none", facecolor="white"))
