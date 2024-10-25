@@ -12,6 +12,14 @@ import seaborn as sns
 
 sns.set_style("whitegrid")
 
+def plot_function_1(df):
+    fig, ax = plt.subplots()
+    ax.plot(df['x'], df['y'])
+    ax.set_title('Function 1')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    # DO NOT SHOW PLOT UNTIL THE MAIN FUNCTION
+
 def main():
     print("Hello, World!")
 
@@ -22,6 +30,8 @@ def main():
     df_backup = pd.read_csv(data_dir / f"{file_name}.csv")
 
 
+
+    # Set this to true if you want to save the figures
     save_figures = False
     if save_figures:
         for i in plt.get_fignums():
