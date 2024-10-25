@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 # PYTHON 3.7
 
 # USER INPUTS
-weight = 35.36  # lbs
-apogee = 5000  # ft
+weight = 39  # lbs
+apogee = 5280  # ft
 drogue_d = 18  # in
 main_cd = 2.2
 drogue_cd = 1.6
