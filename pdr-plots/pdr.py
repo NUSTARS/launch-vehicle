@@ -26,10 +26,8 @@ def main():
     file_name = "hello"
     project_root = Path(__file__).parent  # Gets the current directory where the script is located
     data_dir = project_root / "pdr-data-2025"
-    df_primary = pd.read_csv(data_dir / f"{file_name}.csv")
-    df_backup = pd.read_csv(data_dir / f"{file_name}.csv")
-
-
+    # df_primary = pd.read_csv(data_dir / f"{file_name}.csv")
+    # df_backup = pd.read_csv(data_dir / f"{file_name}.csv")
 
     # Set this to true if you want to save the figures
     save_figures = False
