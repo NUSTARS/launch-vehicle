@@ -12,6 +12,8 @@ import seaborn as sns
 
 sns.set_style("whitegrid")
 
+# REQUIRES PYTHON 3.7
+
 def plot_function_1(df):
     fig, ax = plt.subplots()
     ax.plot(df['x'], df['y'])
