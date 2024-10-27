@@ -48,6 +48,19 @@ def clipped_plot(dfs, file_names, fields, title, times):
 
     return fig
 
+def clipped_plot_2(fig, dfs, file_names, fields, title, times):
+    ax = fig.axes[0]
+    for df in dfs:
+        df = df.loc[(df[fields[0]] >= times[0]) & (df[fields[0]] <= times[1])]
+        ax.plot(df[fields[0]], df[fields[1]])
+    ax.set_title(title + ' for Possible Flight Paths')
+    ax.set_xlabel(fields[0].replace("(", "[").replace(")", "]"))
+    ax.set_ylabel(fields[1].replace("(", "[").replace(")", "]"))
+    ax.legend(file_names)
+    # DO NOT SHOW PLOT UNTIL THE MAIN FUNCTION
+
+    return fig
+
 def main():
     print("Hello, World!")
     dfs = []
@@ -63,6 +76,10 @@ def main():
     standard_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Velocity")
     standard_plot(dfs, file_names, ['Time (s)', 'Vertical acceleration (ft/s²)'], "Acceleration")
     clipped_plot(dfs, file_names, ['Time (s)', 'Stability margin calibers (​)'], "Dynamic Stability", [t_off_rail, 15])
+    fig = clipped_plot(dfs, file_names, ['Time (s)', 'CP location (in)'], "CG & CP Location from Nose Cone Tip", [t_off_rail, 15])
+    fig = clipped_plot_2(fig, dfs, file_names, ['Time (s)', 'CG location (in)'], "CG & CP Locations", [t_off_rail, 15])
+    fig.axes[0].set_ylabel('Distance from Nose Cone Tip [in]')
+    fig.axes[0].legend(['CP - Default', 'CP - Poor Conditons', 'CP - Ideal Conditons', 'CG - Default', 'CG - Poor Conditions', 'CG - Ideal Conditions'])
 
     if save_figures:
         for i in plt.get_fignums():
