@@ -67,17 +67,17 @@ def main():
 
     for file_name in file_names:
         project_root = Path(__file__).parent  # Gets the current directory where the script is located
-        data_dir = project_root / "OR_csvs"
+        data_dir = project_root / "RAS_csvs"
         dfs.append(pd.read_csv(data_dir / f"{file_name}.csv", comment='#'))
         print(file_name + " Loaded")
 
-    fig = standard_plot(dfs, file_names, ['Time (s)', 'Altitude (ft)'], "Height AGL")
-    fig.axes[0].set_ylabel('Height AGL [ft]')
-    standard_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Velocity")
-    standard_plot(dfs, file_names, ['Time (s)', 'Vertical acceleration (ft/s²)'], "Acceleration")
-    clipped_plot(dfs, file_names, ['Time (s)', 'Stability margin calibers (​)'], "Dynamic Stability", [t_off_rail, 15])
-    fig = clipped_plot(dfs, file_names, ['Time (s)', 'CP location (in)'], "CG & CP Location from Nose Cone Tip", [t_off_rail, 15])
-    fig = clipped_plot_2(fig, dfs, file_names, ['Time (s)', 'CG location (in)'], "CG & CP Locations", [t_off_rail, 15])
+    #fig = standard_plot(dfs, file_names, ['Time (s)', 'Altitude (ft)'], "Height AGL")
+    #fig.axes[0].set_ylabel('Height AGL [ft]')
+    #standard_plot(dfs, file_names, ['Time (sec)', 'Vertical velocity (ft/s)'], "Velocity")
+    #standard_plot(dfs, file_names, ['Time (s)', 'Vertical acceleration (ft/s²)'], "Acceleration")
+    #clipped_plot(dfs, file_names, ['Time (s)', 'Stability margin calibers (​)'], "Dynamic Stability", [t_off_rail, 15])
+    fig = clipped_plot(dfs, file_names, ['Time (sec)', 'CP (in)'], "CG & CP Location from Nose Cone Tip", [t_off_rail, 15])
+    fig = clipped_plot_2(fig, dfs, file_names, ['Time (sec)', 'CG (in)'], "CG & CP Locations", [t_off_rail, 15])
     fig.axes[0].set_ylabel('Distance from Nose Cone Tip [in]')
     fig.axes[0].legend(['CP - Default', 'CP - Poor Conditons', 'CP - Ideal Conditons', 'CG - Default', 'CG - Poor Conditions', 'CG - Ideal Conditions'])
 
