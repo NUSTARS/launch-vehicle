@@ -1146,7 +1146,7 @@ def generic_plot(xaxis_key, yaxis_key, df, title, xlabel, ylabel, color='b'):
 def main(file_name, properties):
     # DATA PREPPING
     project_root = Path(__file__).parent  # Gets the current directory where the script is located
-    data_dir = project_root / "data-2024"
+    data_dir = project_root / "data-2025"
     df_primary = pd.read_csv(data_dir / f"{file_name}_primary.csv")
     df_backup = pd.read_csv(data_dir / f"{file_name}_backup.csv")
 
@@ -1165,12 +1165,11 @@ def main(file_name, properties):
 
         print("Specific Run")
 
-        profile_plot(df_backup)
-        main_parachute_plot_backup_only(df_backup, properties)
-        report(df_backup)
-        #voltage_plot(df_backup)
-        #drag_coefficient_calculation(df_backup, properties)
-        #eport(df_backup)
+        profile_plot(df_primary)
+        main_parachute_plot_backup_only(df_primary, properties)
+        report(df_primary)
+        voltage_plot(df_primary)
+        drag_coefficient_calculation(df_primary, properties)
 
         #(df_primary)
         #voltage_plot(df_primary)
@@ -1203,14 +1202,14 @@ def main(file_name, properties):
     if debug:
         smoothing_comparison_plot(df_primary)
 
-    save_figures = False
+    save_figures = True
     if save_figures:
         for i in plt.get_fignums():
-            plt.figure(i).savefig(f'/figures/figure_{i}.png', dpi=300)
+            plt.figure(i).savefig(f'/figures/2025_figure_{i}.png', dpi=300)
 
     plt.show()
 
-file_name = "FT3"
+file_name = "SFT1"
 properties = {"weight": 36.77, "area": 0.22, "length_scale":6.17, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # FT7
 main(file_name, properties)
 
