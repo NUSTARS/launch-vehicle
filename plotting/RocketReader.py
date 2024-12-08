@@ -1202,18 +1202,19 @@ def main(file_name, properties):
     if debug:
         smoothing_comparison_plot(df_primary)
 
+    output_dir = "figures"  # Relative path (adjust if you need an absolute path)
     save_figures = True
     if save_figures:
+        os.makedirs(output_dir, exist_ok=True)
         for i in plt.get_fignums():
-            plt.figure(i).savefig(f'/figures/2025_figure_{i}.png', dpi=300)
+            plt.figure(i).savefig(f'{output_dir}/figure_{i}.png', dpi=300)
 
     plt.show()
 
 file_name = "SFT1"
-properties = {"weight": 36.77, "area": 0.22, "length_scale":6.17, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # FT7
+properties = {"weight": 9.51, "area": (3/12)**2*3.1415/4, "length_scale":3, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # SFT1
+# need to add weight of propellant
 main(file_name, properties)
-
-# GO TO THE TOP AND UPDATE THE DIRECTORY FOR YOUR SYSTEM
 
 # notes for future
 # add ways to detect failed import and improve error checking
