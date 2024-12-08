@@ -1,5 +1,5 @@
-*.csv
-*.png
+# *.csv
+# *.png
 
 
 # Byte-compiled / optimized / DLL files
