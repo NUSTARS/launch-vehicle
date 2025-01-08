@@ -361,7 +361,8 @@ def comparison_plot(df_primary, df_backup):
 
 def drag_coefficient_calculation(df, properties):
     try:
-        isolated_df = df[(df['state_name'].str.strip() == 'fast') | (df['state_name'].str.strip() == 'coast')]
+        # isolated_df = df[(df['state_name'].str.strip() == 'fast') | (df['state_name'].str.strip() == 'coast')]
+        isolated_df = df[(df['state_name'].str.strip() == 'coast')]
 
         time = isolated_df['time']
         velocity = isolated_df['smoothed_velocity_ft/s']
