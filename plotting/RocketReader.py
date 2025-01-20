@@ -1144,12 +1144,24 @@ def generic_plot(xaxis_key, yaxis_key, df, title, xlabel, ylabel, color='b'):
     except:
         print("Error generating generic plot")
 
-def main(file_name, properties):
+def parse_properties(file_path):
+    properties = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            key, value = line.strip().split(':')
+            properties[key.strip()] = float(value.strip())
+    return properties
+
+def main(file_name):
+
     # DATA PREPPING
     project_root = Path(__file__).parent  # Gets the current directory where the script is located
     data_dir = project_root / "data-2025"
     df_primary = pd.read_csv(data_dir / f"{file_name}_primary.csv")
     df_backup = pd.read_csv(data_dir / f"{file_name}_backup.csv")
+
+    properties_file = data_dir / f"{file_name}_properties.txt"
+    properties = parse_properties(properties_file)
 
     # CLEANING DATA AND CONVERTING TO IMPERIAL
     alpha = 0.6
@@ -1213,10 +1225,11 @@ def main(file_name, properties):
 
     plt.show()
 
+# properties = {"weight": 9.51, "area": (3/12)**2*3.1415/4, "length_scale":3, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # SFT1
+# properties should be read and parsed from the plotting/data-2025/SFT1.txt file
+
 file_name = "SFT1"
-properties = {"weight": 9.51, "area": (3/12)**2*3.1415/4, "length_scale":3, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # SFT1
-# need to add weight of propellant
-main(file_name, properties)
+main(file_name)
 
 # notes for future
 # add ways to detect failed import and improve error checking
