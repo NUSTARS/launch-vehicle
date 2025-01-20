@@ -1203,7 +1203,8 @@ def main(file_name, properties):
     if debug:
         smoothing_comparison_plot(df_primary)
 
-    output_dir = "figures"  # Relative path (adjust if you need an absolute path)
+    output_dir = os.path.join("plotting", "figures", file_name)
+
     save_figures = True
     if save_figures:
         os.makedirs(output_dir, exist_ok=True)
