@@ -1152,16 +1152,20 @@ def parse_properties(file_path):
             properties[key.strip()] = float(value.strip())
     return properties
 
-def main(file_name):
+def main(year, file_name):
 
     # DATA PREPPING
     project_root = Path(__file__).parent  # Gets the current directory where the script is located
-    data_dir = project_root / "data-2025"
+    data_dir = project_root / year
     df_primary = pd.read_csv(data_dir / f"{file_name}_primary.csv")
     df_backup = pd.read_csv(data_dir / f"{file_name}_backup.csv")
 
     properties_file = data_dir / f"{file_name}_properties.txt"
-    properties = parse_properties(properties_file)
+    try:
+        properties = parse_properties(properties_file)
+    except:
+        print("Error reading properties file")
+        properties = {"weight": 1, "area": 1, "length_scale":5, "primary_main_parachute_height":550, "backup_main_parachute_height":500} # SFT1
 
     # CLEANING DATA AND CONVERTING TO IMPERIAL
     alpha = 0.6
@@ -1175,18 +1179,12 @@ def main(file_name):
     # FOR TESTING
     specific_run = False
     if specific_run:
-
         print("Specific Run")
-
         profile_plot(df_primary)
         main_parachute_plot_backup_only(df_primary, properties)
         report(df_primary)
         voltage_plot(df_primary)
         drag_coefficient_calculation(df_primary, properties)
-
-        #(df_primary)
-        #voltage_plot(df_primary)
-        #print("HI ANDY")
     
     # GENERAL PLOTS
     default_run = True
@@ -1221,20 +1219,17 @@ def main(file_name):
     if save_figures:
         os.makedirs(output_dir, exist_ok=True)
         for i in plt.get_fignums():
-            plt.figure(i).savefig(f'{output_dir}/figure_{i}.png', dpi=300)
+            plt.figure(i).savefig(f'{output_dir}/{year[5:9]}-{file_name}-{i}.png', dpi=300)
 
     plt.show()
 
-# properties = {"weight": 9.51, "area": (3/12)**2*3.1415/4, "length_scale":3, "primary_main_parachute_height":600, "backup_main_parachute_height":550} # SFT1
-# properties should be read and parsed from the plotting/data-2025/SFT1.txt file
-
+year = "data-2025"
 file_name = "SFT1"
-main(file_name)
+
+main(year, file_name)
 
 # notes for future
 # add ways to detect failed import and improve error checking
 # add way to convert legacy rrc3 files into usable data -> differentiate to find acceleration
 # add some way to switch to metric bc reasons
 # probably default everything to metric and add if statement to convert to imperial at END of calculations when displaying stuff
-# idk how to deal with properties but 
-# add way to determine or set input units
