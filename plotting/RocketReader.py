@@ -8,9 +8,6 @@ from PIL import Image
 import matplotlib.ticker as ticker
 import os
 from pathlib import Path
-# import seaborn as sns
-# import scipy as spi
-# from mpl_toolkits.mplot3d import Axes3D
 
 input_is_metric = True
 output_is_metric = False
