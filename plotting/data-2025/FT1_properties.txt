@@ -1,5 +1,5 @@
 weight: 44.05
-area: 20.83072279
+area: 0.1446578
 length_scale: 5.15
 primary_main_parachute_height: 550
 backup_main_parachute_height: 500

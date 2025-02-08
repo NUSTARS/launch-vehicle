@@ -368,8 +368,8 @@ def drag_coefficient_calculation(df, properties):
         acceleration = isolated_df['smoothed_acceleration_ft/s^2']
         height = isolated_df['smoothed_height_ft']
 
-        W = properties['weight']
-        mass = W/32.17
+        weight = properties['weight']
+        mass = weight/32.17
         A = properties['area']
         drag_force = abs(mass * acceleration)
 
@@ -416,14 +416,19 @@ def drag_coefficient_calculation(df, properties):
 
         plt.tight_layout()
 
-        # New figure for Drag Force vs Time
-        fig2, ax2 = plt.subplots(figsize=(6, 4))
-        ax2.scatter(time, drag_force)
-        ax2.set_xlabel('Time (s)')
-        ax2.set_ylabel('Drag Force (lbf)')
-        ax2.set_title('Drag Force vs. Time')
-        ax2.grid(True)
-        plt.tight_layout()
+        # Cd_fixed = 0.9
+        # expected_drag_force = q * Cd_fixed * A
+
+        # fig2, ax2 = plt.subplots(figsize=(6, 4))
+        # ax2.scatter(time, drag_force-weight, label='Computed Drag Force', color='b', alpha=0.6)
+        # ax2.scatter(time, expected_drag_force, label='Expected Drag Force', color='r', alpha=0.6)
+        # ax2.set_xlabel('Time (s)')
+        # ax2.set_ylabel('Drag Force (lbf)')
+        # ax2.set_title('Drag Force vs. Time')
+        # ax2.legend()
+        # ax2.grid(True)
+
+        # plt.tight_layout()
         
         return drag_data_df
     except:
