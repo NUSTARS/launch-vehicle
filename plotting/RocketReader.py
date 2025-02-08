@@ -45,6 +45,7 @@ def add_fluid_properties(df, properties):
 
         # experimental stuff that depends on viscosity
         df['reynolds_number'] = (df['smoothed_velocity_ft/s'] * properties['length_scale']) / df['kinematic_viscosity']
+        # df['drag_force'] = abs(properties[''] * acceleration)
         # df['mach_number'] = df['velocity_ft/s'] / df['speed_of_sound']
         # df['stagnation_pressure'] = 0.5 * df['density'] * df['velocity_ft/s']**2
         # df['stagnation_temperature'] = df['temperature'] + (df['velocity_ft/s']**2) / (2 * 1716)
@@ -94,8 +95,9 @@ def smoothing_comparison_plot(df):
         ax2.legend()
         ax3.legend()
 
-    except:
+    except Exception as e:
       print('Error generating smoothing comparison plot')
+      print(e)
 
 def gps_plot(df):
     assert 'latitude' in df.columns, 'Latitude data not found in DataFrame'
@@ -412,6 +414,15 @@ def drag_coefficient_calculation(df, properties):
 
         fig.suptitle('Coefficient of Drag Analysis')
 
+        plt.tight_layout()
+
+        # New figure for Drag Force vs Time
+        fig2, ax2 = plt.subplots(figsize=(6, 4))
+        ax2.scatter(time, drag_force)
+        ax2.set_xlabel('Time (s)')
+        ax2.set_ylabel('Drag Force (lbf)')
+        ax2.set_title('Drag Force vs. Time')
+        ax2.grid(True)
         plt.tight_layout()
         
         return drag_data_df
@@ -1165,7 +1176,7 @@ def main(year, file_name):
         properties = {"weight": 1, "area": 1, "length_scale":5, "primary_main_parachute_height":550, "backup_main_parachute_height":500} # SFT1
 
     # CLEANING DATA AND CONVERTING TO IMPERIAL
-    alpha = 0.6
+    alpha = 0.5
     df_primary = convert_to_imperial(clean_data(df_primary,alpha))
     df_backup = convert_to_imperial(clean_data(df_backup,alpha))
 
@@ -1177,11 +1188,6 @@ def main(year, file_name):
     specific_run = False
     if specific_run:
         print("Specific Run")
-        profile_plot(df_primary)
-        main_parachute_plot_backup_only(df_primary, properties)
-        report(df_primary)
-        voltage_plot(df_primary)
-        drag_coefficient_calculation(df_primary, properties)
     
     # GENERAL PLOTS
     default_run = True
@@ -1218,7 +1224,7 @@ def main(year, file_name):
         for i in plt.get_fignums():
             plt.figure(i).savefig(f'{output_dir}/{year[5:9]}-{file_name}-{i}.png', dpi=300)
 
-    plt.show()
+    # plt.show()
 
 year = "data-2025"
 file_name = "FT1"
