@@ -153,45 +153,94 @@ def gps_plot(df):
     except:
         print('Error plotting GPS data')
 
-    # fig.add_trace(go.Scatter(
-    # x=df['longitude'],
-    # y=df['latitude'],
-    # mode='markers',
-    # marker=dict(
-    #     size=9,
-    #     color=df['time'],  # Color points based on the time column
-    #     colorscale='Viridis',  # Choose a color scale
-    #     colorbar=dict(title='Time')  # Add a color bar
-    # ),
-    # name='GPS Data'
-    # ))
-
-    # fig.add_trace(go.Scatter(
-    # x=[df['longitude'].iloc[0]],
-    # y=[df['latitude'].iloc[0]],
-    # mode='markers',
-    # marker=dict(size=12, color='blue'),
-    # name='Initial Position'
-    # ))
-
-    # # Highlight final position
-    # fig.add_trace(go.Scatter(
-    #     x=[df['longitude'].iloc[-1]],
-    #     y=[df['latitude'].iloc[-1]],
-    #     mode='markers',
-    #     marker=dict(size=12, color='red'),
-    #     name='Final Position'
-    # ))
-
-    # # Set the layout
-    # fig.update_layout(
-    #     title="GPS Data Plot",
-    #     xaxis=dict(title="Longitude"),
-    #     yaxis=dict(title="Latitude"),
-    # )
-
-    # # Show the figure
-    # fig.show()
+def gps_drift_plot(df):
+    assert 'latitude' in df.columns, 'Latitude data not found in DataFrame'
+    assert 'longitude' in df.columns, 'Longitude data not found in DataFrame'
+    
+    try:
+        # Convert latitude and longitude to displacement from origin in meters
+        lat_origin, lon_origin = df['latitude'].iloc[0], df['longitude'].iloc[0]
+        lat_displacement = (df['latitude'] - lat_origin) * 111139  # Approx. meters per degree
+        lon_displacement = (df['longitude'] - lon_origin) * 111139 * np.cos(np.deg2rad(lat_origin))
+        
+        # Compute radial drift distance and angle (theta)
+        df['drift_distance_m'] = np.sqrt(lat_displacement**2 + lon_displacement**2)
+        df['drift_distance_ft'] = df['drift_distance_m'] * 3.28084  # Convert to feet
+        df['theta'] = np.arctan2(lat_displacement, lon_displacement)  # Angle in radians
+        
+        max_drift_index = df['drift_distance_ft'].idxmax()
+        final_drift_index = df.index[-1]
+        
+        # Create the 3D scatter plot in cylindrical coordinates
+        fig = go.Figure()
+        fig.add_trace(go.Scatter3d(
+            x=df['drift_distance_ft'] * np.cos(df['theta']),
+            y=df['drift_distance_ft'] * np.sin(df['theta']),
+            z=df['smoothed_height_ft'],
+            mode='markers',
+            marker=dict(
+                size=4,
+                color=df['smoothed_velocity_ft/s'],
+                colorscale='Viridis',
+                opacity=0.8
+            ),
+            name='Trajectory'
+        ))
+        
+        # # Mark the maximum drift point
+        # fig.add_trace(go.Scatter3d(
+        #     x=[df['drift_distance_ft'][max_drift_index] * np.cos(df['theta'][max_drift_index])],
+        #     y=[df['drift_distance_ft'][max_drift_index] * np.sin(df['theta'][max_drift_index])],
+        #     z=[df['smoothed_height_ft'][max_drift_index]],
+        #     mode='markers',
+        #     marker=dict(
+        #         size=8,
+        #         color='red',
+        #         opacity=1
+        #     ),
+        #     name='Max Drift'
+        # ))
+        
+        # Draw reference circles
+        for r in np.linspace(0, df['drift_distance_ft'].max(), num=5):
+            theta_circle = np.linspace(0, 2*np.pi, 100)
+            fig.add_trace(go.Scatter3d(
+                x=r * np.cos(theta_circle),
+                y=r * np.sin(theta_circle),
+                z=np.full_like(theta_circle, df['smoothed_height_ft'].min()),
+                mode='lines',
+                line=dict(color='gray', width=1, dash='dash'),
+                name=f'Radius {r:.1f} ft'
+            ))
+        
+        # Add final drift distance marker
+        fig.add_trace(go.Scatter3d(
+            x=[df['drift_distance_ft'][final_drift_index] * np.cos(df['theta'][final_drift_index])],
+            y=[df['drift_distance_ft'][final_drift_index] * np.sin(df['theta'][final_drift_index])],
+            z=[df['smoothed_height_ft'][final_drift_index]],
+            mode='lines+markers',
+            line=dict(color='red', width=4),
+            marker=dict(
+                size=10,
+                color='red',
+                opacity=1
+            ),
+            name=f'Touchdown Drift: {df["drift_distance_ft"][final_drift_index]:.1f} ft'
+        ))
+        
+        # Update layout
+        fig.update_layout(
+            title='3D Trajectory with Cylindrical Coordinates and Drift Circles',
+            scene=dict(
+                xaxis=dict(title='Radial Distance X (feet)'),
+                yaxis=dict(title='Radial Distance Y (feet)'),
+                zaxis=dict(title='Altitude (feet)')
+            )
+        )
+        
+        fig.show()
+    except Exception as e:
+        print(f'Error plotting GPS drift data: {e}')
 
 def profile_plot(df):
     try:
@@ -1193,11 +1242,13 @@ def main(year, file_name):
     specific_run = False
     if specific_run:
         print("Specific Run")
+        gps_drift_plot(df_primary)
     
     # GENERAL PLOTS
-    default_run = True
+    default_run = False
     if default_run:
         gps_plot(df_primary)
+        gps_drift_plot(df_primary)
         comparison_plot(df_primary, df_backup)
         profile_plot(df_primary)
         voltage_plot(df_primary)
