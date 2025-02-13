@@ -1280,7 +1280,7 @@ def main(year, file_name):
         for i in plt.get_fignums():
             plt.figure(i).savefig(f'{output_dir}/{year[5:9]}-{file_name}-{i}.png', dpi=300)
 
-    # plt.show()
+    plt.show()
 
 year = "data-2025"
 file_name = "FT1"
