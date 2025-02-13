@@ -1211,6 +1211,8 @@ def parse_properties(file_path):
     with open(file_path, 'r') as file:
         for line in file:
             key, value = line.strip().split(':')
+            print(key)
+            print(value)
             properties[key.strip()] = float(value.strip())
     return properties
 
@@ -1245,7 +1247,7 @@ def main(year, file_name):
         gps_drift_plot(df_primary)
     
     # GENERAL PLOTS
-    default_run = False
+    default_run = True
     if default_run:
         gps_plot(df_primary)
         gps_drift_plot(df_primary)
@@ -1274,7 +1276,7 @@ def main(year, file_name):
 
     output_dir = os.path.join("plotting", "figures", file_name)
 
-    save_figures = True
+    save_figures = False
     if save_figures:
         os.makedirs(output_dir, exist_ok=True)
         for i in plt.get_fignums():
@@ -1282,8 +1284,8 @@ def main(year, file_name):
 
     plt.show()
 
-year = "data-2025"
-file_name = "FT1"
+year = "data-2024"
+file_name = "FT3"
 
 main(year, file_name)
 
