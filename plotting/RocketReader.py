@@ -1284,8 +1284,8 @@ def main(year, file_name):
 
     plt.show()
 
-year = "data-2024"
-file_name = "FT3"
+year = "data-2025"
+file_name = "FT1"
 
 main(year, file_name)
 
