@@ -76,7 +76,7 @@ def main():
 
     #fig = standard_plot(dfs, file_names, ['Time (s)', 'Altitude (ft)'], "Height AGL")
     #fig.axes[0].set_ylabel('Height AGL [ft]')
-    standard_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Velocity")
+    #standard_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Velocity")
     #standard_plot(dfs, file_names, ['Time (s)', 'Vertical acceleration (ft/s²)'], "Acceleration")
     #clipped_plot(dfs, file_names, ['Time (s)', 'Stability margin calibers (​)'], "Dynamic Stability", [t_off_rail, 15])
     #fig = clipped_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Rail Exit Velocity", [0, t_off_rail*1.1])
