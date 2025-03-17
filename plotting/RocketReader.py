@@ -1243,14 +1243,14 @@ def main(year, file_name):
     df_backup = add_fluid_properties(df_backup, properties)
 
     # FOR TESTING
-    specific_run = True
+    specific_run = False
     if specific_run:
         print("Specific Run")
         drag_coefficient_calculation(df_primary, properties)
         
     
     # GENERAL PLOTS
-    default_run = False
+    default_run = True
     if default_run:
         gps_plot(df_primary)
         gps_drift_plot(df_primary)
