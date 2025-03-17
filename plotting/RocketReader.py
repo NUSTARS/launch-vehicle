@@ -408,7 +408,7 @@ def comparison_plot(df_primary, df_backup):
         print('Error plotting comparison data')
 
 def drag_coefficient_calculation(df, properties):
-    try:
+    # try:
         # isolated_df = df[(df['state_name'].str.strip() == 'fast') | (df['state_name'].str.strip() == 'coast')]
         isolated_df = df[(df['state_name'].str.strip() == 'coast')]
 
@@ -422,13 +422,15 @@ def drag_coefficient_calculation(df, properties):
         A = properties['area']
         drag_force = abs(mass * acceleration)
 
+        print(isolated_df['density'])
+
         q = isolated_df['dynamic_pressure']
         drag_coefficients = drag_force / (q * A)
 
         reynolds_number = isolated_df['reynolds_number']
 
         A_value = 0 # lower bound on Cd
-        B_value = 1 # upper bound on Cd, values above this are from low speeds and likely innacurate
+        B_value = 2 # upper bound on Cd, values above this are from low speeds and likely innacurate
 
         drag_coefficients_clipped = drag_coefficients[(drag_coefficients >= A_value) & (drag_coefficients <= B_value)]
         time_clipped = time[(drag_coefficients >= A_value) & (drag_coefficients <= B_value)]
@@ -480,8 +482,8 @@ def drag_coefficient_calculation(df, properties):
         # plt.tight_layout()
         
         return drag_data_df
-    except:
-        print('Error calculating drag coefficient')
+    # except:
+        # print('Error calculating drag coefficient')
 
 def kinematic_viscosity(height_ft):
     # Constants for Sutherland's formula
@@ -1211,8 +1213,8 @@ def parse_properties(file_path):
     with open(file_path, 'r') as file:
         for line in file:
             key, value = line.strip().split(':')
-            print(key)
-            print(value)
+            # print(key)
+            # print(value)
             properties[key.strip()] = float(value.strip())
     return properties
 
@@ -1241,13 +1243,14 @@ def main(year, file_name):
     df_backup = add_fluid_properties(df_backup, properties)
 
     # FOR TESTING
-    specific_run = False
+    specific_run = True
     if specific_run:
         print("Specific Run")
-        gps_drift_plot(df_primary)
+        drag_coefficient_calculation(df_primary, properties)
+        
     
     # GENERAL PLOTS
-    default_run = True
+    default_run = False
     if default_run:
         gps_plot(df_primary)
         gps_drift_plot(df_primary)
@@ -1285,7 +1288,7 @@ def main(year, file_name):
     plt.show()
 
 year = "data-2025"
-file_name = "FT1"
+file_name = "FT1/FT1"
 
 main(year, file_name)
 
