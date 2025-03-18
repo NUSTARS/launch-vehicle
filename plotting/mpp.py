@@ -19,7 +19,7 @@ save_figures = True    # Set this to true if you want to save the figures
 t_off_rail = 0.3
 
 project_root = Path(__file__).parent  # Gets the current directory where the script is located
-data_dir = project_root / "data-2025" / "MPP" / "FRR" / "OR_csvs"
+data_dir = project_root / "data-2025" / "MPP" / "FRR" / "RAS_csvs"
 fig_dir = project_root / "figures" / "MPP" / "FRR"  
 ###################################
 
@@ -70,26 +70,24 @@ def main():
     dfs = []
 
     for file_name in file_names:     
-        print(data_dir)
         dfs.append(pd.read_csv(data_dir / f"{file_name}.csv", comment='#'))
         print(file_name + " Loaded")
 
-    #fig = standard_plot(dfs, file_names, ['Time (s)', 'Altitude (ft)'], "Height AGL")
+    #fig = standard_plot(dfs, file_names, ['Time (sec)', 'Altitude (ft)'], "RasAero II Height AGL")
     #fig.axes[0].set_ylabel('Height AGL [ft]')
-    #standard_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Velocity")
-    #standard_plot(dfs, file_names, ['Time (s)', 'Vertical acceleration (ft/s²)'], "Acceleration")
-    #clipped_plot(dfs, file_names, ['Time (s)', 'Stability margin calibers (​)'], "Dynamic Stability", [t_off_rail, 15])
-    #fig = clipped_plot(dfs, file_names, ['Time (s)', 'Vertical velocity (ft/s)'], "Rail Exit Velocity", [0, t_off_rail*1.1])
-    # fig = clipped_plot(dfs, file_names, ['Time (sec)', 'CP (in)'], "CG & CP Location from Nose Cone Tip", [t_off_rail, 15])
-    # fig = clipped_plot_2(fig, dfs, file_names, ['Time (sec)', 'CG (in)'], "CG & CP Locations", [t_off_rail, 15])
-    # fig.axes[0].set_ylabel('Distance from Nose Cone Tip [in]')
-    # fig.axes[0].legend(['CP - Default', 'CP - Poor Conditons', 'CP - Ideal Conditons', 'CG - Default', 'CG - Poor Conditions', 'CG - Ideal Conditions'])
+    #standard_plot(dfs, file_names, ['Time (sec)', 'Vel-V (ft/sec)'], "RasAero II Velocity")
+    #standard_plot(dfs, file_names, ['Time (sec)', 'Accel-V (ft/sec^2)'], "RasAero II Acceleration")
 
-    plt.show()
+    clipped_plot(dfs, file_names, ['Time (sec)', 'Stability Margin (cal)'], "RasAero II Dynamic Stability", [t_off_rail, 15])
+    fig = clipped_plot(dfs, file_names, ['Time (sec)', 'CP (in)'], "RasAero II CG & CP Location from Nose Cone Tip", [t_off_rail, 15])
+    fig = clipped_plot_2(fig, dfs, file_names, ['Time (sec)', 'CG (in)'], "RasAero II CG & CP Locations from Nose Cone Tip", [t_off_rail, 15])
+    fig.axes[0].set_ylabel('Distance from Nose Cone Tip [in]')
+    fig.axes[0].legend(['CP - Default', 'CP - Poor Conditons', 'CP - Ideal Conditons', 'CG - Default', 'CG - Poor Conditions', 'CG - Ideal Conditions'])
 
     if save_figures:
         for i in plt.get_fignums():
-            plt.figure(i).savefig(project_root / f'{plt.figure(i).axes[0].get_title().replace(" ", "_")}.png', dpi=300)
+            print("saving...")
+            plt.figure(i).savefig(fig_dir / f'{plt.figure(i).axes[0].get_title().replace(" ", "_")}.png', dpi=300)
 
     plt.show()
 
