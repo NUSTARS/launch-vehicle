@@ -1226,7 +1226,7 @@ def main(year, file_name):
 
     # DATA PREPPING
     project_root = Path(__file__).parent  # Gets the current directory where the script is located
-    data_dir = project_root / year
+    data_dir = project_root / year / file_name
     df_primary = pd.read_csv(data_dir / f"{file_name}_primary.csv")
     df_backup = pd.read_csv(data_dir / f"{file_name}_backup.csv")
 
@@ -1247,7 +1247,7 @@ def main(year, file_name):
     df_backup = add_fluid_properties(df_backup, properties)
 
     # FOR TESTING
-    specific_run = True
+    specific_run = False
     if specific_run:
         print("Specific Run")
         # drag_coefficient_calculation(df_primary, properties)
@@ -1256,7 +1256,7 @@ def main(year, file_name):
         
     
     # GENERAL PLOTS
-    default_run = False
+    default_run = True
     if default_run:
         gps_plot(df_primary)
         gps_drift_plot(df_primary)
@@ -1285,7 +1285,7 @@ def main(year, file_name):
 
     output_dir = os.path.join("plotting", "figures", file_name)
 
-    save_figures = False
+    save_figures = True
     if save_figures:
         os.makedirs(output_dir, exist_ok=True)
         for i in plt.get_fignums():
@@ -1294,7 +1294,7 @@ def main(year, file_name):
     plt.show()
 
 year = "data-2025"
-file_name = "FT2/FT2"
+file_name = "FT2"
 
 main(year, file_name)
 
