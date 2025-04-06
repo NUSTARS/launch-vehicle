@@ -1288,7 +1288,7 @@ def main(year, file_name):
     plt.show()
 
 year = "data-2025"
-file_name = "FT1/FT1"
+file_name = "FT2/FT2"
 
 main(year, file_name)
 
