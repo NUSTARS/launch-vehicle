@@ -290,8 +290,7 @@ def profile_plot(df):
         plt.title('Flight Profile Plot')
 
         return fig
-
-        #plt.savefig('flight_profile_plot.png', dpi=300)
+    
     except:
         print('Error plotting flight data')
 
@@ -723,13 +722,13 @@ def voltage_plot(df):
         ax2.grid(True)
 
         # Highlight abrupt changes in voltage data with vertical lines
-        threshold = 0.04  # You can adjust this threshold as needed
+        threshold = 0.3  # You can adjust this threshold as needed
 
         drogue_diff = np.abs(np.diff(drogue_voltage))
         main_diff = np.abs(np.diff(main_voltage))
 
         drogue_index = np.argmax(drogue_diff > threshold) + 1  # Adding 1 to align with original indices
-        main_index = np.argmax(main_diff > threshold) + 1  # Adding 1 to align with original indices
+        main_index = np.argmax(main_diff > threshold) + 1  # Adding 1 to account for skipped indices
 
         # Plot vertical lines and annotate on both subplots
         if drogue_index > 0:
@@ -943,7 +942,7 @@ def report(df):
         print("Error generating report")
 
 def main_parachute_plot(df_primary,df_backup,properties):
-    assert 'state_name' in df_primary.columns, 'State Name column not found in DataFrame'
+    # assert 'state_name' in df_primary.columns, 'State Name column not found in DataFrame'
 
     try:
         main_parachute_index_primary = df_primary.index[df_primary['state_name'].str.strip() == 'main'].tolist()[0]
@@ -953,8 +952,8 @@ def main_parachute_plot(df_primary,df_backup,properties):
         time_main_backup = df_backup.loc[main_parachute_index_backup, 'time']
 
         # Calculate the time difference in seconds
-        N_before = 1
-        M_after = 8
+        N_before = 2
+        M_after = 12
         start_index_primary = df_primary[df_primary['time'] <= time_main_primary - N_before].index[-1]
         end_index_primary = df_primary[df_primary['time'] >= time_main_primary + M_after].index[0]
         start_index_backup = df_backup[df_backup['time'] <= time_main_backup - N_before].index[-1]
@@ -1042,14 +1041,19 @@ def main_parachute_plot(df_primary,df_backup,properties):
         ax3_backup.axvline(x=threshold_crossing_time_backup, color='red', linestyle='--', linewidth=1)
 
         main_voltage_primary = df_primary['main_voltage']
-        main_voltage_threshold = 0.3  # You can adjust this threshold as needed
-        main_diff_primary = np.abs(np.diff(main_voltage_primary))
-        main_voltage_index_primary = np.argmax(main_diff_primary > main_voltage_threshold) + 1
-        if main_voltage_index_primary > 0:
-            ax1_primary.axvline(x=time_primary[main_voltage_index_primary], color='purple', linestyle='--', linewidth=1)
-            ax1_primary.text(time_primary[main_voltage_index_primary], ax1_primary.get_ylim()[0], f'{time_primary[main_voltage_index_primary]:.1f}', color='purple', ha='center', va='bottom')
-            ax2_primary.axvline(x=time_primary[main_voltage_index_primary], color='purple', linestyle='--', linewidth=1)
-            ax3_primary.axvline(x=time_primary[main_voltage_index_primary], color='purple', linestyle='--', linewidth=1)
+
+        main_voltage_threshold = 0.1  # You can adjust this threshold as needed
+
+        try:
+            main_diff_primary = np.abs(np.diff(main_voltage_primary))
+            main_voltage_index_primary = np.argmax(main_diff_primary > main_voltage_threshold) + 1
+            if main_voltage_index_primary > 0:
+                ax1_primary.axvline(x=time_primary[main_voltage_index_primary], color='purple', linestyle='--', linewidth=1)
+                ax1_primary.text(time_primary[main_voltage_index_primary], ax1_primary.get_ylim()[0], f'{time_primary[main_voltage_index_primary]:.1f}', color='purple', ha='center', va='bottom')
+                ax2_primary.axvline(x=time_primary[main_voltage_index_primary], color='purple', linestyle='--', linewidth=1)
+                ax3_primary.axvline(x=time_primary[main_voltage_index_primary], color='purple', linestyle='--', linewidth=1)
+        except:
+            print("Error calculating main voltage index for primary data... continuing")
 
         main_voltage_backup = df_backup['main_voltage']
         main_diff_backup = np.abs(np.diff(main_voltage_backup))
@@ -1243,14 +1247,16 @@ def main(year, file_name):
     df_backup = add_fluid_properties(df_backup, properties)
 
     # FOR TESTING
-    specific_run = False
+    specific_run = True
     if specific_run:
         print("Specific Run")
-        drag_coefficient_calculation(df_primary, properties)
+        # drag_coefficient_calculation(df_primary, properties)
+        main_parachute_plot(df_primary, df_backup, properties)
+        voltage_plot(df_primary)
         
     
     # GENERAL PLOTS
-    default_run = True
+    default_run = False
     if default_run:
         gps_plot(df_primary)
         gps_drift_plot(df_primary)
