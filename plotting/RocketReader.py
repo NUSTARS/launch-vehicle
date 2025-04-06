@@ -255,7 +255,7 @@ def profile_plot(df):
         ax1.plot(time, height, label='Height (ft)', color='blue')
         ax1.set_xlabel('Time (s)')
         ax1.set_ylabel('Height (ft)', color='blue')
-        #ax1.tick_params('y', colors='blue')
+        ax1.tick_params('y', colors='blue')
         ax1.xaxis.set_minor_locator(ticker.AutoMinorLocator(4))  # Adjust the number as needed
         #ax1.yaxis.set_minor_locator(ticker.AutoMinorLocator(4))  # Adjust the number as needed
 
