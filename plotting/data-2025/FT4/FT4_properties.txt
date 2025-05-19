@@ -1,0 +1,8 @@
+weight: 44.82
+area: 0.1446578
+length_scale: 5.15
+primary_main_parachute_height: 600
+backup_main_parachute_height: 550
+burn_duration: 2.2
+propellant_weight: 4.023436
+motor_weight: 8.501025
