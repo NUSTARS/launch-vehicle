@@ -33,50 +33,48 @@ params = {
     "drogue_cd": drogue_cd,
     "main_cd": main_cd,
     "mass": mass,
+    "main_dep_time": None,
+    "drogue_v": None,
     "t_fill": None
 }
 
-def drogue_dynamics(t, state, params):
-    x, y, vx, vy = state  # Unpack state
-    rho = density(y)  # Get air density
-    # Drogue parachute only
-    f_drag = 0.5 * rho * vy**2 * params["drogue_cd"] * params["drogue_A"]
-    f_y = f_drag - params["mass"] * g
-    f_x = 0
-
-    ax = f_x / params["mass"]
-    ay = f_y / params["mass"]
-
-    return [vx, vy, ax, ay]
-
-
-def inflating_dynamics(t, state, params):
+def recovery_dynamics(t, state, params):
     x, y, vx, vy = state  # Unpack state
     rho = density(y)  # Get air density
 
-    # calculate parachute area for this timestep -- from Knacke, for solid textile parachutes
-    drag_area_frac = ((1-eta)*(t / params["t_fill"])**3 + eta)**2
-    computed_area = drag_area_frac * params['main_A']
-
-    # calculate drag    
-    f_drag = ((0.5 * rho * vy**2 * params["main_cd"] * computed_area) + 
-              (0.5 * rho * vy**2 * params["drogue_cd"] * params["drogue_A"]))
-    f_y = f_drag - params["mass"] * g
-    f_x = 0
-
-    ax = f_x / params["mass"]
-    ay = f_y / params["mass"]
-
-    return [vx, vy, ax, ay]
-
-
-def main_dynamics(t, state, params):
-    x, y, vx, vy = state  # Unpack state
-    rho = density(y)  # Get air density
+    if y > params["main_alt"]:
+        # Drogue parachute only
+        f_drag = 0.5 * rho * vy**2 * params["drogue_cd"] * params["drogue_A"]
     
-    # calculate force for this timestep
-    f_drag = ((0.5 * rho * vy**2 * params["main_cd"] * params["main_A"]) + 
-              (0.5 * rho * vy**2 * params["drogue_cd"] * params["drogue_A"]))
+    elif y > 0:
+        # Main parachute, with dynamic opening (Andy's linear approx)
+        height_to_open = 300
+        if params["main_alt"] - y < height_to_open:
+            computed_area = params["drogue_A"] + (params["main_A"] - params["drogue_A"]) * (params["main_alt"] - y) / height_to_open
+        else:
+            computed_area = params["main_A"]
+        f_drag = 0.5 * rho * vy**2 * params["main_cd"] * computed_area
+
+        # Bernie's initial inflation dynamics
+        # # if this is the first point below main dep, record the time, drogue velocity, and fill time 
+        # if params['main_dep_time'] is None:
+        #     params['main_dep_time'] = t
+        #     params['drogue_v'] = vy
+        #     params['t_fill'] = np.round((n*main_d/12)/(abs(params['drogue_v'])**0.85), decimals=2)
+
+        # if (t - params['main_dep_time']) < params['t_fill']:
+        #     # calculate parachute area for this timestep -- from Knacke, for solid textile parachutes
+        #     drag_area_frac = ((1-eta)*((t - params['main_dep_time'])/params["t_fill"])**3 + eta)**2
+        #     computed_area = drag_area_frac * params['main_A']
+        
+        # else:  # parachute fully open
+        #     computed_area = params['main_A']
+
+        # # calculate force for this timestep
+        # f_drag = 0.5 * rho * vy**2 * params["main_cd"] * computed_area
+    else:
+        return [0, 0, 0, 0]  # Stop descent at ground level
+
     f_y = f_drag - params["mass"] * g
     f_x = 0
 
@@ -84,7 +82,6 @@ def main_dynamics(t, state, params):
     ay = f_y / params["mass"]
 
     return [vx, vy, ax, ay]
-
 
 def density(h):
     """Air density based on altitude (ft)."""
@@ -100,25 +97,11 @@ def density(h):
         rho = -1  # Out of atmospheric range
     return rho
 
-
-def main_dep_event(t, y):
-    """Stop integrating with drogue dynamics"""
-    return y[1] - params["main_alt"]
-main_dep_event.terminal = True
-main_dep_event.direction = -1
-
-def full_inflation_event(t, y):
-    """Stop integrating with inflating parachute dynamics"""
-    return params["t_fill"] - t
-full_inflation_event.terminal = True
-full_inflation_event.direction = -1
-
 def landing_event(t, y):
     """Stop integration when altitude reaches 0 (ground level)."""
     return y[1]  # Track altitude (y position)
 landing_event.terminal = True
 landing_event.direction = -1
-
 
 def plot_results(time, states, params):
     """Plot height and velocity against time."""
@@ -126,7 +109,7 @@ def plot_results(time, states, params):
 
     # Height vs. Time
     axs[0].plot(time, states[1, :], "-")
-    axs[0].set_ylim(0, params["apogee"]+100)
+    axs[0].set_ylim(0, params["apogee"])
     axs[0].set_xlabel("Time [s]")
     axs[0].set_ylabel("Height [ft]")
     axs[0].axhline(params["apogee"], linestyle='--', color='b', label='Apogee')
@@ -171,39 +154,15 @@ initial_conditions = [0, apogee, 0, 0]
 t_span = [0, 1e3]
 
 # Solve ODE using `solve_ivp`
-drogue_sol = solve_ivp(
-    lambda t, y: drogue_dynamics(t, y, params),
+sol = solve_ivp(
+    lambda t, y: recovery_dynamics(t, y, params),
     t_span,
     initial_conditions,
-    method='RK45',
-    events=main_dep_event,
-    rtol=1e-6
-)
-
-drogue_v = drogue_sol.y[3, -1]
-params['t_fill'] = np.round((n*main_d/12)/(abs(drogue_v)**0.85), decimals=2)
-
-inflating_sol = solve_ivp(
-    lambda t, y: inflating_dynamics(t, y, params),
-    t_span,
-    drogue_sol.y[:,-1],
-    method='RK45',
-    events=full_inflation_event,
-    rtol=1e-6
-)
-
-main_sol = solve_ivp(
-    lambda t, y: main_dynamics(t, y, params),
-    t_span,
-    inflating_sol.y[:,-1],
     method='RK45',
     events=landing_event,
     rtol=1e-6
 )
 
-combined_time = np.concatenate((drogue_sol.t, (inflating_sol.t + drogue_sol.t[-1]), (main_sol.t + drogue_sol.t[-1] + inflating_sol.t[-1])))
-combined_traj = np.concatenate((drogue_sol.y, inflating_sol.y, main_sol.y), axis=1)
-
 # Plot the results
-plot_results(combined_time, combined_traj, params)
+plot_results(sol.t, sol.y, params)
 plt.show()
