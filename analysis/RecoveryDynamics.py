@@ -6,22 +6,13 @@ import mplcursors
 # PYTHON 3.7
 
 # USER INPUTS
-# weight = 36.56 + 3.73 # lbs
-# apogee = 5000  # ft
-# drogue_d = 18  # in
-# main_cd = 2.2
-# drogue_cd = 1.6
-# main_alt = 550  # ft
-# main_d = 120  # in
-# airframe_d = 4  # in
-
 weight = 10.99 # lbs
 apogee = 4000  # ft
 drogue_d = 18.48  # in
 main_cd = 2.2
 drogue_cd = 0.9
 main_alt = 550  # ft
-main_d = 96  # in
+main_d = 48  # in
 airframe_d = 4  # in
 
 # CONSTANTS
@@ -187,7 +178,7 @@ def plot_results(time, states, drag_area, drag_force, params):
     drag_axs.grid(True)
 
     # find where main is fully open and plot a line there
-    idx_inflated = np.argmax(drag_area == params["main_A"]*params["main_cd"] + params["drogue_A"]*params["drogue_cd"])
+    idx_inflated = np.argmax(drag_area == params["main_A"]*params["main_cd"])
     drag_axs.axvline(time[idx_inflated], linestyle="--", linewidth=0.75, label="Main Parachute Fully Open")
 
     # Drag force vs. time
@@ -196,7 +187,6 @@ def plot_results(time, states, drag_area, drag_force, params):
     
     # make hovering over lines display values
     cursor = mplcursors.cursor([altitude, velocity, dragarea_line, dragforce_line], hover=True)
-
 
     plt.tight_layout()
 
@@ -239,6 +229,7 @@ main_sol = solve_ivp(
 combined_time = np.concatenate((drogue_sol.t, 
                                 (inflating_sol.t + drogue_sol.t[-1]), 
                                 (main_sol.t + drogue_sol.t[-1] + inflating_sol.t[-1])))
+
 combined_traj = np.concatenate((drogue_sol.y, 
                                 inflating_sol.y, 
                                 main_sol.y), 
@@ -248,16 +239,17 @@ combined_traj = np.concatenate((drogue_sol.y,
 # get drag area and drag force v time for whole flight
 density_vec = np.vectorize(density)   # needed for vectorized operation
 
-drogue_dragarea = np.repeat(params["drogue_A"]*params["drogue_cd"], len(drogue_sol.t))
+#drogue_dragarea = np.repeat(params["drogue_A"]*params["drogue_cd"], len(drogue_sol.t))
+drogue_dragarea = np.zeros(len(drogue_sol.t))   # we are just focusing on drag from the main parachute here
 drogue_dragforce = 0.5 * density_vec(drogue_sol.y[1]) * (drogue_sol.y[3])**2 * drogue_dragarea
 
 # I couldn't save data on parachute inflation/drag force bc of how this solver works
 # just calculate area (we have t_fill and velocities) and drag force using vectorized operations here, then plot
 inflation_curve = ((1-eta)*(inflating_sol.t / params["t_fill"])**3 + eta)**2
-inflating_dragarea = inflation_curve * params["main_A"] * params["main_cd"] + drogue_dragarea[-1]
+inflating_dragarea = inflation_curve * params["main_A"] * params["main_cd"] #+ drogue_dragarea[-1]
 inflating_dragforce = 0.5 * density(params["main_alt"]) * (inflating_sol.y[3])**2 * inflating_dragarea
 
-main_dragarea = np.repeat(params["main_A"]*params["main_cd"] + params["drogue_A"]*params["drogue_cd"], len(main_sol.t))
+main_dragarea = np.repeat(params["main_A"]*params["main_cd"], len(main_sol.t))
 main_dragforce = 0.5 * density_vec(main_sol.y[1]) * (main_sol.y[3])**2 * main_dragarea
 
 # combine
