@@ -12,7 +12,7 @@ drogue_d = 36  # in
 main_cd = 2.2
 drogue_cd = 1.6
 main_alt = 1000  # ft
-main_d = 120  # in
+main_d = 96  # in
 airframe_d = 5  # in
 
 # CONSTANTS
