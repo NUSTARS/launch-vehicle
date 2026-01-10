@@ -6,7 +6,7 @@ import mplcursors
 # PYTHON 3.7
 
 # USER INPUTS
-weight = 31.17 # lbs
+weight = 34.27 # lbs
 apogee = 10000  # ft
 drogue_d = 36  # in
 main_cd = 2.2
