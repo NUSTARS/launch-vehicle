@@ -6,14 +6,14 @@ import mplcursors
 # PYTHON 3.7
 
 # USER INPUTS
-weight = 10.99 # lbs
-apogee = 4000  # ft
-drogue_d = 18.48  # in
+weight = 34.27 # lbs
+apogee = 10000  # ft
+drogue_d = 24  # in
 main_cd = 2.2
-drogue_cd = 0.9
-main_alt = 550  # ft
-main_d = 48  # in
-airframe_d = 4  # in
+drogue_cd = 1.6
+main_alt = 1000  # ft
+main_d = 96  # in
+airframe_d = 5  # in
 
 # CONSTANTS
 g = 32.17  # ft/s^2
