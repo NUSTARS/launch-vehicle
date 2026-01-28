@@ -11,24 +11,26 @@ m2 = 10.9 # (kg) aft section
 p_force = 934 # (N) force from blackpowder
 coupler_length = 0.127 # (m)
 
-def initial_dynamics(x, t):
+def initial_dynamics(t, x):
     return np.array([x[2], x[3], -p_force/m1, p_force/m2])
 
 def separation_event(t, y): # stops integration when it returns 0
-    return (0.127 - (y[1] - y[0]))
+    return coupler_length - (y[1] - y[0])
 
 separation_event.terminal = True
-separation_event.terminal = -1
+separation_event.direction = -1
 
-ic_sol = spi.solve_ivp(initial_dynamics, (0, t_vec[-1]), np.array([0, 0, 0, 0]), method='RK45', t_eval=t_vec, max_step=0.01)
+ic_sol = spi.solve_ivp(initial_dynamics, (0, t_vec[-1]), np.array([0, 0, 0, 0]), events = separation_event, method='RK45', t_eval=t_vec, max_step=0.01)
 forward_vel = (ic_sol.y.T[:, 2])[-1]
 aft_vel = (ic_sol.y.T[:, 3])[-1]
 
-axs[0].plot(ic_sol.t, ic_sol.y.T[:, 0])
-axs[0].plot(ic_sol.t, ic_sol.y.T[:, 1])
-axs[0].set_ylabel('Position (m)')
-axs[0].set_title('Separation vs Time')
-axs[0].set_xlabel('Time (s)')
+fig1, ax1 = plt.subplots()
+ax1.plot(ic_sol.t, ic_sol.y.T[:, 0], label = 'Forward Section Position')
+ax1.plot(ic_sol.t, ic_sol.y.T[:, 1], label = 'Aft Section Position')
+ax1.set_ylabel('Position (m)')
+ax1.set_title('Separation vs Time')
+ax1.set_xlabel('Time (s)')
+ax1.legend()
 
 x_0 = np.array([0, 0, forward_vel, aft_vel])  # [pos_x, pos_y, vel_x, vel_y]
 
