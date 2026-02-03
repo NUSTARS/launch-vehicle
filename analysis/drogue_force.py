@@ -28,7 +28,7 @@ fig1, ax1 = plt.subplots()
 ax1.plot(ic_sol.t, ic_sol.y.T[:, 0], label = 'Forward Section Position')
 ax1.plot(ic_sol.t, ic_sol.y.T[:, 1], label = 'Aft Section Position')
 ax1.set_ylabel('Position (m)')
-ax1.set_title('Separation vs Time')
+ax1.set_title('Section Positions vs Time')
 ax1.set_xlabel('Time (s)')
 ax1.legend()
 
