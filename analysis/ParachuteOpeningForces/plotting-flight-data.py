@@ -219,10 +219,10 @@ def plot_overlay(cell_dat_path, blr_LR_path, blr_HR_path, telemega_path):
 
 
 if __name__ == "__main__":
-    plot_overlay('data/flight_1_trimmed.txt', 'Rocket Name LR_08-16-2025_12_28_06.csv', 'Rocket Name HR_08-16-2025_12_28_06.csv', '2025-08-16-serial-16162-flight-0002.csv')
-    plot_loadcell('data/flight_1_trimmed.txt')
+    # plot_overlay('data/flight_1_trimmed.txt', 'Rocket Name LR_08-16-2025_12_28_06.csv', 'Rocket Name HR_08-16-2025_12_28_06.csv', '2025-08-16-serial-16162-flight-0002.csv')
+    # plot_loadcell('data/flight_1_trimmed.txt')
     #plot_blueraven('Rocket Name LR_08-16-2025_12_28_06.csv', 'Rocket Name HR_08-16-2025_12_28_06.csv')
-    #plot_altus('bernie_backup.csv', False)
+    plot_altus("C:/Users/waldm/OneDrive/Documents/GitHub/launch-vehicle/plotting/data-2026/FT1/FT1_primary.csv", False)
     #plot_loadcell("data/flight_sim.txt")
     #plot_altus('2025-08-16-serial-16162-flight-0002.csv', False)
     plt.show()
