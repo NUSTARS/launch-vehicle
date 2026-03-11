@@ -1283,7 +1283,7 @@ def main(year, file_name):
     if debug:
         smoothing_comparison_plot(df_primary)
 
-    output_dir = os.path.join("plotting", "figures", file_name)
+    output_dir = os.path.join("plotting", year, "figures", file_name)
 
     save_figures = True
     if save_figures:
@@ -1293,7 +1293,7 @@ def main(year, file_name):
 
     plt.show()
 
-year = "data-2026"
+year = "data-2025"
 file_name = "FT1"
 
 main(year, file_name)
