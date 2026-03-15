@@ -4,27 +4,33 @@ import matplotlib.pyplot as plt
 import mplcursors
 import numpy as np
 
-def plot_altus(filename, metric=True):
+def plot_altus(filename, metric=False):
     flight_data = pd.read_csv(filename)
 
     if not metric:
         flight_data['height'] = flight_data['height'] * 3.28084
         flight_data['speed'] = flight_data['speed'] * 3.28084
+        flight_data['acceleration'] = flight_data['acceleration'] * 3.28084
 
-    fig, motion_graph = plt.subplots()
+    fig, motion_graph = plt.subplots(3,1, sharex=True)
 
-    # Plot altitude and speed with markers
-    alt_line, = motion_graph.plot(flight_data['time'], flight_data['height'], label='Altitude')
-    spd_line, = motion_graph.plot(flight_data['time'], flight_data['speed'], label='Velocity')
+    # Plot altitude and speed and acc with markers
+    alt_line, = motion_graph[0].plot(flight_data['time'], flight_data['height'], label='Altitude')
+    spd_line, = motion_graph[1].plot(flight_data['time'], flight_data['speed'], label='Velocity')
+    acc_line, = motion_graph[2].plot(flight_data['time'], flight_data['acceleration'], label='Acceleration')
 
-    motion_graph.set_xlabel("Time (s)")
-    motion_graph.set_ylabel("Altitude (ft), Velocity (ft/s)" if not metric else "Altitude (m), Velocity (m/s)")
-    motion_graph.set_title("Altus Altimeter Flight Data")
-    motion_graph.grid(True)
-    motion_graph.legend()
+    motion_graph[0].set_ylabel('Altitude [ft]' if not metric else 'Altitude (m)')
+    motion_graph[1].set_ylabel('Vertical Speed [ft/s]' if not metric else "Velocity (m/s)")
+    motion_graph[2].set_ylabel('Vertical Acceleration [ft/s^2]' if not metric else 'Acceleration (m/s^2)')
+
+    motion_graph[2].set_xlabel("Time (s)")
+    motion_graph[0].set_title("Altus Altimeter Flight Data")
+    motion_graph[0].grid(True)
+    motion_graph[1].grid(True)
+    motion_graph[2].grid(True)
 
     # Enable hover on both data series
-    cursor = mplcursors.cursor([alt_line, spd_line], hover=True)
+    cursor = mplcursors.cursor([alt_line, spd_line, acc_line], hover=True)
     cursor.connect("add", lambda sel: sel.annotation.set_text(
         f"t = {sel.target[0]:.2f}s\nval = {sel.target[1]:.2f}"))
 
@@ -89,14 +95,12 @@ def plot_blueraven(LR_filename, HR_filename):
         f"t = {sel.target[0]:.2f}s\nval = {sel.target[1]:.2f}"))
 
     #plt.show()
-
     return LR_data, HR_data
 
 
-
 if __name__ == "__main__":
-    plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003.csv", False)
-    plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003-via-12200.csv", False)
+    plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003.csv", True)
+    plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003-via-12200.csv", True)
     plt.show()
 
 
