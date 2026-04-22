@@ -99,8 +99,9 @@ def plot_blueraven(LR_filename, HR_filename):
 
 
 if __name__ == "__main__":
-    plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003.csv", False)
-    plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003-via-12200.csv", False)
+    plot_altus("data-2026/FT2/2026-04-19-serial-16162-flight-0004.csv", False)
+    #plot_altus("plotting\\data-2026\\FT2\\2026-04-19-serial-16162-flight-0004.csv", False)
+    #plot_altus("plotting\\data-2026\\FT1\\2026-03-08-serial-16162-flight-0003-via-12200.csv", False)
     plt.show()
 
 
