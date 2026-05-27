@@ -65,7 +65,7 @@ def plot_altus(filename, title, metric=False):
 
 def plot_blueraven(LR_filename, HR_filename, title):
     LR_data = pd.read_csv(LR_filename)
-    # HR_data = pd.read_csv(HR_filename)
+    HR_data = pd.read_csv(HR_filename)
 
     fig1, alt = plt.subplots()
 
@@ -80,45 +80,50 @@ def plot_blueraven(LR_filename, HR_filename, title):
     spd_line, = spd.plot(LR_data['Flight_Time_(s)'], LR_data['Velocity_Up'], label='Velocity', color='tab:orange')
     spd.set_ylabel('Vertical Speed (ft/s)')
 
-    # acc = alt.twinx()
-    # acc.spines["right"].set_position(("outward", 60))   # push spine out
-    # acc_line, = acc.plot()
+    acc = alt.twinx()
+    acc.spines["right"].set_position(("outward", 60))   # push spine out
+    acc_line, = acc.plot(HR_data['Flight_Time_(s)'], np.sqrt(HR_data['Accel_X']**2 + HR_data['Accel_Y']**2 + HR_data["Accel_Z"]**2))
+    acc.set_ylabel("Acceleration (ft/s^2)")
     
 
     plt.title(f"Blue Raven: {title}")
     alt.legend(handles=[blr_alt_line, spd_line])
 
 
-    # fig2, HR_graph = plt.subplots()
-    # x_accel, = HR_graph.plot(HR_data['Flight_Time_(s)'], HR_data['Accel_X'], label='X Acceleration')
-    # y_accel, = HR_graph.plot(HR_data['Flight_Time_(s)'], HR_data['Accel_Y'], label='Y Acceleration')
-    # z_accel, = HR_graph.plot(HR_data['Flight_Time_(s)'], HR_data['Accel_Z'], label='Z Acceleration')
+    fig2, HR_graph = plt.subplots()
+    x_accel, = HR_graph.plot(HR_data['Flight_Time_(s)'], HR_data['Accel_X'], label='X Acceleration')
+    y_accel, = HR_graph.plot(HR_data['Flight_Time_(s)'], HR_data['Accel_Y'], label='Y Acceleration')
+    z_accel, = HR_graph.plot(HR_data['Flight_Time_(s)'], HR_data['Accel_Z'], label='Z Acceleration')
 
-    # HR_graph.set_xlabel("Time [s]")
-    # HR_graph.set_ylabel("Acceleration [g's]")
-    # HR_graph.set_title("Blue Raven HR Accelerometer Flight Data")
-    # HR_graph.grid(True)
-    # HR_graph.legend()
+    HR_graph.set_xlabel("Time [s]")
+    HR_graph.set_ylabel("Acceleration [g's]")
+    HR_graph.set_title("Blue Raven HR Accelerometer Flight Data")
+    HR_graph.grid(True)
+    HR_graph.legend()
 
 
     fig3, voltage_graph = plt.subplots()
     apo_ch_line, = voltage_graph.plot(LR_data['Flight_Time_(s)'], LR_data['Apo_Volts'], label='Apo Volts')
     main_ch_line, = voltage_graph.plot(LR_data['Flight_Time_(s)'], LR_data['Main_Volts'], label='Main Volts')
 
+    alt = voltage_graph.twinx()
+    alt_line, = alt.plot(LR_data['Flight_Time_(s)'], LR_data['Baro_Altitude_AGL_(feet)'])
+    alt.set_ylabel("Altitude [ft]")
+
     voltage_graph.set_xlabel("Flight Time")
     voltage_graph.set_ylabel("Volts")
-    voltage_graph.set_title(f"Voltage on Deployment Channels: {title}")
+    voltage_graph.set_title(f"Raven Voltage: {title}")
     voltage_graph.legend()
 
     # Enable hover on both data series
     cursor = mplcursors.cursor([blr_alt_line,
-                                spd_line,  
+                                spd_line,
+                                acc_line,  
                                 apo_ch_line, 
                                 main_ch_line, 
-                                # x_accel, 
-                                # y_accel, 
-                                # z_accel
-                                ], 
+                                x_accel, 
+                                y_accel, 
+                                z_accel], 
                                 hover=True)
     cursor.connect("add", lambda sel: sel.annotation.set_text(
         f"t = {sel.target[0]:.2f}s\nval = {sel.target[1]:.2f}"))
@@ -128,10 +133,12 @@ def plot_blueraven(LR_filename, HR_filename, title):
 
 
 if __name__ == "__main__":
-    #plot_altus('plotting\data-2026\FT3\Rocket_TeleMega.csv', 'FT3 Rocket')
-    #plot_altus('plotting\data-2026\FT3\Payload_TeleMega.csv', 'FT3 Payload')
-    plot_blueraven('plotting\data-2026\FT3\Rocket_BlRv_LR.csv', 'plotting\data-2026\FT3\Rocket_BlRv_HR.csv', "FT3 Rocket")
-    plot_blueraven('plotting\data-2026\FT3\Payload_BlRv_LR.csv', '', "FT3 Payload")
+    plot_altus('plotting\data-2026\FT3\Rocket_TeleMega.csv', 'FT3 Rocket')
+    plot_blueraven('plotting\data-2026\FT3\Rocket_BlRv_LR.csv', 'plotting\data-2026\FT3\Rocket_BlRv_HR.csv', "FT3 Rocket")    
+    plot_altus('plotting\data-2026\FT3\Payload_TeleMega.csv', 'FT3 Payload')
+    plot_blueraven('plotting\data-2026\FT3\Payload_BlRv_LR.csv', 'plotting\data-2026\FT3\Payload_BlRv_HR.csv', "FT3 Payload")
+
+    
     plt.show()
 
 
