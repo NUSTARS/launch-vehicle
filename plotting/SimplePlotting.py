@@ -71,7 +71,6 @@ def plot_blueraven(LR_filename, HR_filename, title):
 
     # Plot altitude and speed with markers
     blr_alt_line, = alt.plot(LR_data['Flight_Time_(s)'], LR_data['Baro_Altitude_AGL_(feet)'], label='Baro Altitude')
-    #inert_alt_line = LR_graph.scatter(LR_data['Flight_Time_(s)'], LR_data['Inertial_Altitude'], label='Inertial Altitude', marker='.')
     alt.set_xlabel("Time (s)")
     alt.set_ylabel("Altitude (ft)")
     alt.grid(True)
@@ -82,12 +81,11 @@ def plot_blueraven(LR_filename, HR_filename, title):
 
     acc = alt.twinx()
     acc.spines["right"].set_position(("outward", 60))   # push spine out
-    acc_line, = acc.plot(HR_data['Flight_Time_(s)'], np.sqrt(HR_data['Accel_X']**2 + HR_data['Accel_Y']**2 + HR_data["Accel_Z"]**2))
+    acc_line, = acc.plot(HR_data['Flight_Time_(s)'], np.sqrt(HR_data['Accel_X']**2 + HR_data['Accel_Y']**2 + HR_data["Accel_Z"]**2), color='tab:green')
     acc.set_ylabel("Acceleration (ft/s^2)")
-    
 
     plt.title(f"Blue Raven: {title}")
-    alt.legend(handles=[blr_alt_line, spd_line])
+    alt.legend(handles=[blr_alt_line, spd_line, acc_line])
 
 
     fig2, HR_graph = plt.subplots()
@@ -100,6 +98,7 @@ def plot_blueraven(LR_filename, HR_filename, title):
     HR_graph.set_title("Blue Raven HR Accelerometer Flight Data")
     HR_graph.grid(True)
     HR_graph.legend()
+    HR_graph.set_title(f'HR BlRv: {title}')
 
 
     fig3, voltage_graph = plt.subplots()
@@ -107,13 +106,13 @@ def plot_blueraven(LR_filename, HR_filename, title):
     main_ch_line, = voltage_graph.plot(LR_data['Flight_Time_(s)'], LR_data['Main_Volts'], label='Main Volts')
 
     alt = voltage_graph.twinx()
-    alt_line, = alt.plot(LR_data['Flight_Time_(s)'], LR_data['Baro_Altitude_AGL_(feet)'])
+    alt_line, = alt.plot(LR_data['Flight_Time_(s)'], LR_data['Baro_Altitude_AGL_(feet)'], color='tab:green', label='Altitude')
     alt.set_ylabel("Altitude [ft]")
 
     voltage_graph.set_xlabel("Flight Time")
     voltage_graph.set_ylabel("Volts")
     voltage_graph.set_title(f"Raven Voltage: {title}")
-    voltage_graph.legend()
+    voltage_graph.legend(handles=[apo_ch_line, main_ch_line, alt_line])
 
     # Enable hover on both data series
     cursor = mplcursors.cursor([blr_alt_line,
@@ -123,18 +122,20 @@ def plot_blueraven(LR_filename, HR_filename, title):
                                 main_ch_line, 
                                 x_accel, 
                                 y_accel, 
-                                z_accel], 
+                                z_accel,
+                                alt_line], 
                                 hover=True)
     cursor.connect("add", lambda sel: sel.annotation.set_text(
         f"t = {sel.target[0]:.2f}s\nval = {sel.target[1]:.2f}"))
 
     #plt.show()
-    return LR_data#, HR_data
+    return LR_data, HR_data
 
 
 if __name__ == "__main__":
     plot_altus('plotting\data-2026\FT3\Rocket_TeleMega.csv', 'FT3 Rocket')
-    plot_blueraven('plotting\data-2026\FT3\Rocket_BlRv_LR.csv', 'plotting\data-2026\FT3\Rocket_BlRv_HR.csv', "FT3 Rocket")    
+    plot_blueraven('plotting\data-2026\FT3\Rocket_BlRv_LR.csv', 'plotting\data-2026\FT3\Rocket_BlRv_HR.csv', "FT3 Rocket") 
+
     plot_altus('plotting\data-2026\FT3\Payload_TeleMega.csv', 'FT3 Payload')
     plot_blueraven('plotting\data-2026\FT3\Payload_BlRv_LR.csv', 'plotting\data-2026\FT3\Payload_BlRv_HR.csv', "FT3 Payload")
 
