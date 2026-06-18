@@ -51,6 +51,7 @@ def plot_altus(filename, title, metric=False):
     main, = volt.plot(flight_data['time'], flight_data['main_voltage'], label='Main Voltage', color='tab:green')
     volt.set_ylabel('Voltage')
     plt.title(f"Altus: {title}")
+    volt.legend(handles=[alt_line, drogue, main], loc='upper right')
 
 
 
@@ -81,7 +82,7 @@ def plot_blueraven(LR_filename, HR_filename, title):
 
     acc = alt.twinx()
     acc.spines["right"].set_position(("outward", 60))   # push spine out
-    acc_line, = acc.plot(HR_data['Flight_Time_(s)'], np.sqrt(HR_data['Accel_X']**2 + HR_data['Accel_Y']**2 + HR_data["Accel_Z"]**2), color='tab:green')
+    acc_line, = acc.plot(HR_data['Flight_Time_(s)'], np.sqrt(HR_data['Accel_X']**2 + HR_data['Accel_Y']**2 + HR_data["Accel_Z"]**2), color='tab:green', label='Acceleration (ft/s^2)')
     acc.set_ylabel("Acceleration (ft/s^2)")
 
     plt.title(f"Blue Raven: {title}")
@@ -113,6 +114,7 @@ def plot_blueraven(LR_filename, HR_filename, title):
     voltage_graph.set_ylabel("Volts")
     voltage_graph.set_title(f"Raven Voltage: {title}")
     voltage_graph.legend(handles=[apo_ch_line, main_ch_line, alt_line])
+    voltage_graph.grid(True)
 
     # Enable hover on both data series
     cursor = mplcursors.cursor([blr_alt_line,
@@ -133,13 +135,17 @@ def plot_blueraven(LR_filename, HR_filename, title):
 
 
 if __name__ == "__main__":
-    plot_altus('plotting\data-2026\FT3\Rocket_TeleMega.csv', 'FT3 Rocket')
-    plot_blueraven('plotting\data-2026\FT3\Rocket_BlRv_LR.csv', 'plotting\data-2026\FT3\Rocket_BlRv_HR.csv', "FT3 Rocket") 
+    # plot_altus('plotting\data-2026\FT3\Rocket_TeleMega.csv', 'FT3 Rocket')
+    # plot_blueraven('plotting\data-2026\FT3\Rocket_BlRv_LR.csv', 'plotting\data-2026\FT3\Rocket_BlRv_HR.csv', "FT3 Rocket") 
 
-    plot_altus('plotting\data-2026\FT3\Payload_TeleMega.csv', 'FT3 Payload')
-    plot_blueraven('plotting\data-2026\FT3\Payload_BlRv_LR.csv', 'plotting\data-2026\FT3\Payload_BlRv_HR.csv', "FT3 Payload")
+    # plot_altus('plotting\data-2026\FT3\Payload_TeleMega.csv', 'FT3 Payload')
+    # plot_blueraven('plotting\data-2026\FT3\Payload_BlRv_LR.csv', 'plotting\data-2026\FT3\Payload_BlRv_HR.csv', "FT3 Payload")
 
+    plot_altus('plotting\data-2026\Midland\Rocket_TeleMega.csv', 'Midland Rocket')
+    plot_blueraven('plotting\data-2026\Midland\Rocket_BlRv_LR.csv', 'plotting\data-2026\Midland\Rocket_BlRv_HR.csv', "Midland Rocket") 
     
+    plot_altus('plotting\data-2026\Midland\Payload_TeleMega.csv', 'Midland Payload')
+
     plt.show()
 
 
