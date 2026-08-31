@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Convert aerodynamic coefficient .txt output (Mach/Alpha sweep, block format)
-into a flat, well-organized .csv file.
+Convert one or more aerodynamic coefficient .txt outputs (Mach/Alpha sweep,
+block format) into a single, flat, well-organized .csv file.
+
+Each input .txt typically corresponds to a single angle of attack (AoA) swept
+across Mach numbers; multiple files (one per AoA) can be passed in and their
+rows are stacked on top of each other in the output, in the order given.
 
 Expected .txt structure
 ------------------------
@@ -14,10 +18,9 @@ Mach number and looks like:
       Frict/Press/Base terms; transonic has none; supersonic/hypersonic adds
       wave-drag terms...], ReynoldsNo
 
-      Only two positions are used here since they're the only ones constant
-      across all regimes: index 2 (CDPowerOff) and the LAST field
-      (ReynoldsNo). Everything else in this line is regime-specific and
-      dropped.
+      Only two positions from this line are used, since they're the only
+      ones constant across all regimes: the LAST field (ReynoldsNo).
+      Everything else in this line is regime-specific and dropped.
 
   Line 2 (constant for the whole block, 3 values):
       Mach, CNAlpha (0-4 deg), CP (0-4 deg)
@@ -29,11 +32,13 @@ Mach number and looks like:
       Mach, Alpha, CL Power Off, CD Power Off, CN Power Off, CA Power Off
       Mach, Alpha, CL Power On,  CD Power On,  CN Power On,  CA Power On
 
-Output columns (one row per Mach/Alpha combination)
-----------------------------------------------------
-Mach, Alpha, CD, CD Power-Off, CD Power-On, CA Power-Off, CA Power-On, CL,
-CN, CN Potential, CN Viscous, CNalpha (0 to 4 deg) (per rad), CP,
-CP (0 to 4 deg), Reynolds Number
+Output columns (one row per Mach/Alpha combination, Mach <= MAX_MACH only)
+---------------------------------------------------------------------------
+Mach, Alpha, CD Power-Off, CD Power-On, CA Power-Off, CA Power-On,
+CL Power-Off, CL Power-On, CN Power-Off, CN Power-On,
+CNalpha (0 to 4 deg) (per rad), CP, Reynolds Number
+
+Note: CP is taken from the "CP Total" field (not the "CP (0-4 deg)" field).
 """
 
 import sys
@@ -41,21 +46,21 @@ from pathlib import Path
 
 import pandas as pd
 
+MAX_MACH = 5.0  # rows with Mach greater than this are dropped from the output
+
 OUTPUT_HEADER = [
     "Mach",
     "Alpha",
-    "CD",
     "CD Power-Off",
     "CD Power-On",
     "CA Power-Off",
     "CA Power-On",
-    "CL",
-    "CN",
-    "CN Potential",
-    "CN Viscous",
+    "CL Power-Off",
+    "CL Power-On",
+    "CN Power-Off",
+    "CN Power-On",
     "CNalpha (0 to 4 deg) (per rad)",
     "CP",
-    "CP (0 to 4 deg)",
     "Reynolds Number",
 ]
 
@@ -87,23 +92,20 @@ def parse_block(block):
     cn_line = block[1]
 
     # --- Block header: Mach, Alpha, CDPowerOff, CDPowerOn, [...regime-specific
-    #     drag breakdown terms, count varies: subsonic has body/fin breakdown,
-    #     transonic has none, supersonic/hypersonic has wave-drag terms...],
-    #     ReynoldsNo
+    #     drag breakdown terms...], ReynoldsNo
     #
-    #     Regardless of regime, field 2 (index 2) is always CD Power-Off and
-    #     the LAST field is always Reynolds No, so key off position/end
-    #     rather than a fixed field count.
+    #     Regardless of regime, the LAST field is always Reynolds No, so key
+    #     off the end rather than a fixed field count.
     if len(header) < 5:
         return rows
-    cd_header = float(header[2])       # constant "CD" for this block
     reynolds = float(header[-1])
 
     # --- CNalpha / CP (0-4 deg), constant for the whole block
     if len(cn_line) < 3:
         return rows
     cn_alpha = float(cn_line[1])
-    cp_04 = float(cn_line[2])
+    # cn_line[2] is CP (0-4 deg) -- not used in the output (CP comes from
+    # the "CP Total" field further down instead).
 
     # --- Remaining lines: groups of 4, one group per Alpha value
     remaining = block[2:]
@@ -115,58 +117,74 @@ def parse_block(block):
 
         mach = float(potvisc[0])
         alpha = float(potvisc[1])
-        cn_potential = float(potvisc[2])
-        cn_viscous = float(potvisc[3])
 
-        cn_total = float(total[2])
         cp_total = float(total[3])
 
-        cl = float(poff[2])           # CL is the same for power-off/on
+        cl_poff = float(poff[2])
         cd_poff = float(poff[3])
+        cn_poff = float(poff[4])
         ca_poff = float(poff[5])
 
+        cl_pon = float(pon[2])
         cd_pon = float(pon[3])
+        cn_pon = float(pon[4])
         ca_pon = float(pon[5])
 
         rows.append([
             mach,
             alpha,
-            cd_header,
             cd_poff,
             cd_pon,
             ca_poff,
             ca_pon,
-            cl,
-            cn_total,
-            cn_potential,
-            cn_viscous,
+            cl_poff,
+            cl_pon,
+            cn_poff,
+            cn_pon,
             cn_alpha,
             cp_total,
-            cp_04,
             reynolds,
         ])
 
     return rows
 
 
-def convert(input_path, output_path):
+def convert(input_paths, output_path):
+    """Parse one or more .txt files and stack all resulting rows into one CSV."""
     all_rows = []
-    for block in read_blocks(input_path):
-        all_rows.extend(parse_block(block))
+    for input_path in input_paths:
+        for block in read_blocks(input_path):
+            all_rows.extend(parse_block(block))
 
     df = pd.DataFrame(all_rows, columns=OUTPUT_HEADER)
+    df = df[df["Mach"] <= MAX_MACH].reset_index(drop=True)
     df.to_csv(output_path, index=False)
 
-    print(f"Wrote {len(df)} rows to {output_path}")
+    print(f"Wrote {len(df)} rows (Mach <= {MAX_MACH}) to {output_path}")
 
 
 if __name__ == "__main__":
-    # if len(sys.argv) != 3:
-    #     print("Usage: python convert_aero_txt_to_csv.py <input.txt> <output.csv>")
-    #     sys.exit(1)
-
-    # in_path = Path(sys.argv[1])
-    # out_path = Path(sys.argv[2])
-    in_path = 'analysis/aero/raw-data/atlas-fins-2.txt'
-    out_path = 'analysis/aero/atlas-fins-2.csv'
-    convert(in_path, out_path)
+    # --- Option A: run from the command line ---
+    #     python3 convert_aero_txt_to_csv.py <output.csv> <input1.txt> [input2.txt ...]
+    if len(sys.argv) >= 3:
+        out_path = Path(sys.argv[1])
+        in_paths = [Path(p) for p in sys.argv[2:]]
+        convert(in_paths, out_path)
+    else:
+        # --- Option B: no arguments given (e.g. hitting Run/F5 in VS Code)
+        #     -> edit the paths below and just click Run.
+        in_paths = [
+            Path("analysis/aero/raw-data/atlas-nofins-0.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-1.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-2.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-3.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-4.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-5.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-6.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-7.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-8.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-9.txt"),
+            Path("analysis/aero/raw-data/atlas-nofins-10.txt"),
+        ]
+        out_path = Path("analysis/aero/atlas-nofins-ras.csv")
+        convert(in_paths, out_path)
