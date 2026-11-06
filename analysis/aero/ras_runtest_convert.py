@@ -174,17 +174,12 @@ if __name__ == "__main__":
         # --- Option B: no arguments given (e.g. hitting Run/F5 in VS Code)
         #     -> edit the paths below and just click Run.
         in_paths = [
-            Path("analysis/aero/raw-data/atlas-nofins-0.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-1.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-2.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-3.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-4.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-5.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-6.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-7.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-8.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-9.txt"),
-            Path("analysis/aero/raw-data/atlas-nofins-10.txt"),
+            Path("Cone/alpha0.txt"),
+            Path("Cone/alpha2.txt"),
+            Path("Cone/alpha4.txt"),
+            Path("Cone/alpha6.txt"),
+            Path("Cone/alpha8.txt"),
+            Path("Cone/alpha10.txt"),
         ]
-        out_path = Path("analysis/aero/atlas-nofins-ras.csv")
+        out_path = Path("cone_test.csv")
         convert(in_paths, out_path)
