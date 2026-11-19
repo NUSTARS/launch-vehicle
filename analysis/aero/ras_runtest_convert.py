@@ -174,12 +174,27 @@ if __name__ == "__main__":
         # --- Option B: no arguments given (e.g. hitting Run/F5 in VS Code)
         #     -> edit the paths below and just click Run.
         in_paths = [
-            Path("Cone/alpha0.txt"),
-            Path("Cone/alpha2.txt"),
-            Path("Cone/alpha4.txt"),
-            Path("Cone/alpha6.txt"),
-            Path("Cone/alpha8.txt"),
-            Path("Cone/alpha10.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-0.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-1.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-2.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-3.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-4.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-5.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-6.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-7.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-8.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-9.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-10.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-11.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-12.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-13.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-14.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-15.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-16.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-17.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-18.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-19.txt"),
+            Path("analysis/aero/stardust-raw-data/stardust-20.txt"),
         ]
-        out_path = Path("cone_test.csv")
+        out_path = Path("stardust-11-19.csv")
         convert(in_paths, out_path)
